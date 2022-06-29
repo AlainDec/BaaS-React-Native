@@ -37,4 +37,4 @@ $ npx react-native init p17BaaS --template react-native-template-typescript@6.10
 Installer les packages :  
 $ npm install @react-navigation/native @react-navigation/native-stack  
 $ npm install react-native-screens react-native-safe-area-context  
-
+$ $ npm install react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view  
