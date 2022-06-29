@@ -43,4 +43,4 @@ Installer React Native Firebase
 $ npm install --save @react-native-firebase/app  
 
 Installer le module d'authentification de Firebase. Ca fournit des services backend et des SDK faciles à utiliser pour authentifier les utilisateurs. Il prend en charge l'authentification à l'aide de mots de passe, de numéros de téléphone, de fournisseurs d'identité fédérés populaires comme Google, Facebook et Twitter, et plus encore.  
-$ @react-native-firebase/auth
+$ npm install @react-native-firebase/auth
