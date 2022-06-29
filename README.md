@@ -33,3 +33,6 @@ Pour l’affichage, les mots de passes devront être caché par défaut.
 
 Avec la nouvelle version de React 18, react Native a des soucis avec React Navigation. Il faut donc créer le projet avec cette ligne de commande :  
 $ npx react-native init p17BaaS --template react-native-template-typescript@6.10.2 
+
+Installer les packages :  
+$ npm install @react-navigation/native @react-navigation/native-stack
