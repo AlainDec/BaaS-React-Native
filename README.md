@@ -35,4 +35,6 @@ Avec la nouvelle version de React 18, react Native a des soucis avec React Navig
 $ npx react-native init p17BaaS --template react-native-template-typescript@6.10.2 
 
 Installer les packages :  
-$ npm install @react-navigation/native @react-navigation/native-stack
+$ npm install @react-navigation/native @react-navigation/native-stack  
+$ npm install react-native-screens react-native-safe-area-context  
+
