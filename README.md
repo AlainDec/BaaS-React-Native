@@ -37,4 +37,10 @@ $ npx react-native init p17BaaS --template react-native-template-typescript@6.10
 Installer les packages :  
 $ npm install @react-navigation/native @react-navigation/native-stack  
 $ npm install react-native-screens react-native-safe-area-context  
-$ $ npm install react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view  
+$ npm install react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view  
+
+Installer React Native Firebase  
+$ npm install --save @react-native-firebase/app  
+
+Installer le module d'authentification de Firebase. Ca fournit des services backend et des SDK faciles à utiliser pour authentifier les utilisateurs. Il prend en charge l'authentification à l'aide de mots de passe, de numéros de téléphone, de fournisseurs d'identité fédérés populaires comme Google, Facebook et Twitter, et plus encore.  
+$ @react-native-firebase/auth
