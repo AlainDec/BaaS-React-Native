@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "794823803888",
+    "project_id": "lamanubaas",
+    "storage_bucket": "lamanubaas.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:794823803888:android:6cba69fc54baeb7bd99335",
+        "android_client_info": {
+          "package_name": "com.p17baas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "794823803888-pej0tq7md7lu2lmgd9q1ad7m78sbtmn1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLIUoY6nnnciX7UHfjGaJ_E9BItU-8hV0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "794823803888-pej0tq7md7lu2lmgd9q1ad7m78sbtmn1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
