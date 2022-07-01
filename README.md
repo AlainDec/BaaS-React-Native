@@ -55,3 +55,6 @@ $ npm i yup
 Yup a besoin d'un resolver et donc de sa librairie :  
 $ npm install @hookform/resolvers  
 
+Doc d'inspiration : https://blog.logrocket.com/email-authentication-react-native-react-navigation-firebase/  
+
+exo 4 : créer la DB : https://console.firebase.google.com/project/lamanubaas/firestore  
