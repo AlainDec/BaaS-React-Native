@@ -21,7 +21,7 @@ type FormValues = {
 interface IForm {
     formType: 'sign-in' | 'sign-up';
     callBackTheData: (data: FormValues) => void;
-    error: string;
+    error?: string;
 }
 
 

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Text, View, Button, Pressable, StyleSheet } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { Text, View, Pressable, StyleSheet } from 'react-native';
 // Navigation
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -12,6 +12,7 @@ import auth from '@react-native-firebase/auth';
 type HomeScreenNavigationProp = NativeStackNavigationProp<HomeStackScreenParamList>
 
 // -------- IDENTIFICATION -------------
+// const SignInScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackScreenParamList, 'Identification'>) => {
 const SignInScreen = () => {
 
     //const navigation = useNavigation<HomeScreenNavigationProp>();
@@ -28,7 +29,8 @@ const SignInScreen = () => {
             .signInWithEmailAndPassword(childData.email, childData.password)
             .then(() => {
                 console.log('Utilisateur logué !');
-                navigation.navigate('Dashboard');
+                
+                //navigation.navigate('Dashboard');
             })
             .catch(error => {
                 if (error.code === 'auth/user-not-found') {
