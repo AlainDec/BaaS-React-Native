@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { HomeStackScreenParamList } from "../navigation/HomeStack";
 // Forms
-import { Form } from '../components/Form';
+import { SignForm } from '../components/SignForm';
 // Firebase
 import auth from '@react-native-firebase/auth';
 
@@ -55,7 +55,7 @@ const SignInScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackScr
     return (
         <View style={styles.container}>
 
-            <Form formType='sign-in' callBackTheData={callbackData} error={error} />
+            <SignForm formType='sign-in' callBackTheData={callbackData} error={error} />
 
             <View style={styles.containerFooterText}>
                 <Text style={styles.text}>Pas encore inscrit ?</Text>

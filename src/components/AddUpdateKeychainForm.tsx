@@ -1,11 +1,12 @@
 import { Text, View, ScrollView, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { InputCustom } from '../components/InputCustom';
+import { InputCustom } from './InputCustom';
 // Formulaire
 import { useForm, Controller } from "react-hook-form";
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { RadioButton } from 'react-native-paper';
 // Navigation
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -16,20 +17,24 @@ import { HomeStackScreenParamList } from "../navigation/HomeStack";
 type FormValues = {
     email: string;
     password: string;
-    operation: 'sign-in' | 'sign-up';
+    name: string;
+    type: string;
+    operation: 'add' | 'update';
 }
 interface IForm {
-    formType: 'sign-in' | 'sign-up';
-    callBackTheData: (data: FormValues) => void;
+    formType: 'add' | 'update';
+    //callBackTheData: (data: FormValues) => void;
     error?: string;
 }
 
 
-export const Form = (props: IForm) => {
+export const AddUpdateKeychainForm = (props: IForm) => {
 
-    const {formType, callBackTheData, error} = props;
+    const { formType/*, callBackTheData*/, error } = props;
 
     const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
+
+    const [checked, setChecked] = useState<string>("a"); // initial choice : site
 
     // REACT HOOK FORM ----------------------------------------------------
     const validationSchema = Yup.object({
@@ -38,6 +43,8 @@ export const Form = (props: IForm) => {
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
             "Doit contenir 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial"
         ).required('Veuillez saisir votre mot de passe'),
+        name: Yup.string().required('Veuillez saisir un nom'),
+        type: Yup.string(),
     });
 
     // React Hook Form
@@ -57,7 +64,7 @@ export const Form = (props: IForm) => {
     const onSubmit: any = (data: FormValues) => {
         console.log('---data enfant----');
         console.log(data);
-        callBackTheData(data);
+        //callBackTheData(data);
 
         // navigation.navigate('Identification');
         //navigation.navigate('Dashboard');
@@ -105,12 +112,64 @@ export const Form = (props: IForm) => {
                 name="password"
             />
 
-            { error !== '' && <Text style={styles.textError}>{error}</Text> }
+            <Controller
+                control={control}
+                rules={{ required: true, maxLength: 50, }}
+                render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+                    <InputCustom
+                        value={value}
+                        placeholder="Nom du site ou de l'application"
+                        error={!!error}
+                        errorDetails={error?.message}
+                        onChangeText={onChange}
+                        onBlur={onBlur}
+                    />
+                )}
+                name="name"
+            />
+
+            <Controller
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { value }, fieldState: { error } }) => (
+                    <RadioButton.Group onValueChange={newValue => setChecked(newValue)} value={value}>
+                            <RadioButton
+                                value={"a"}
+                                status={checked === 'a' ? 'checked' : 'unchecked'}
+                            />
+                            <RadioButton
+                                value={"b"}
+                                status={checked === 'b' ? 'checked' : 'unchecked'}
+                            />
+                    </RadioButton.Group>
+                    // <View style={{flexDirection: 'row', marginTop: 25}}>
+                    //     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    //         <RadioButton
+                    //             value={value}
+                    //             status={checked === 0 ? 'checked' : 'unchecked'}
+                    //             onPress={() => setChecked(0)}
+                    //         />
+                    //         <Text>Site internet</Text>
+                    //     </View>
+                    //     <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 5 }}>
+                    //         <RadioButton
+                    //             value={value}
+                    //             status={checked === 1 ? 'checked' : 'unchecked'}
+                    //             onPress={() => setChecked(1)}
+                    //         />
+                    //         <Text>Application mobile</Text>
+                    //     </View>
+                    // </View>
+                )}
+                name="type"
+            />
+
+            {error !== '' && <Text style={styles.textError}>{error}</Text>}
 
             <View style={{ alignItems: 'center', marginTop: 20 }}>
                 <Pressable onPress={handleSubmit(onSubmit)} style={styles.pressable}>
                     <View style={styles.button}>
-                        <Text style={styles.text}>{formType === 'sign-in' ? 'Connection' : 'Créer mon compte'}</Text>
+                        <Text style={styles.text}>{formType === 'add' ? 'Ajouter' : 'Mettre à jour'}</Text>
                     </View>
                 </Pressable>
             </View>

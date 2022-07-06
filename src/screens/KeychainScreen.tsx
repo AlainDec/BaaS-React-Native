@@ -95,6 +95,8 @@ const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackS
     const addItem = (): void => {
         console.log("add ");
 
+        navigation.navigate("AddKeychain");
+        /*
         if (userAuth) {
             firestore()
                 .collection('Users')
@@ -108,6 +110,7 @@ const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackS
                 });
             //setSelectedId(item.id)
         }
+        */
     }
 
     const updateItem = (id: string): void => {
