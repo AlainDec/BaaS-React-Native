@@ -22,26 +22,26 @@ interface TData {
     userId: string;
 }
 
-const KeychainScreen = () => {
+const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackScreenParamList, 'Identification'>) => {
 
-    const navigation = useNavigation<HomeScreenNavigationProp>();
+    //const navigation = useNavigation<HomeScreenNavigationProp>();
     const [data, setData] = useState<any>();
     const [countData, setCountData] = useState<number>(0);
     let userAuth = auth().currentUser;
 
     function onResult(querySnapshot: any) {
-        console.log('Récupération de la collection des users');
+        console.log('KeychainScreen: Récupération de la collection des users');
 
         let items: TData[] = [];
         querySnapshot.forEach((snapshot: any) => {
-            console.log("ID=" + snapshot.id);
+            console.log("KeychainScreen: ID=" + snapshot.id);
             let id = { 'id:': snapshot.id }
             let item = snapshot.data();
             item.id = snapshot.id;
             items.push(item);
         });
 
-        console.log("onResult()");
+        console.log("KeychainScreen: onResult()");
         console.log(items);
         setCountData(items.length);
         setData(items);
@@ -53,16 +53,16 @@ const KeychainScreen = () => {
 
     useEffect(() => {
         //const user = auth().currentUser;
-        console.log("utilisateur = " + userAuth?.uid);
+        console.log("KeychainScreen: utilisateur = " + userAuth?.uid);
         // Listener sur les modifications de la requête. Il surveille la collection "Trousseau"
         // lorsque les documents sont modifiés (suppression, ajout, modification)
         // Donc si j'ajoute un champ dans Firebase, en web, l'app mobile affichera en temps réel
         // la nouvelle ligne, sans refresh manuel !
-        console.log("useEffect()");
+        console.log("KeychainScreen: useEffect()");
         if (userAuth) {
             firestore()
                 .collection('Users')
-                .doc(userAuth?.uid)
+                .doc(userAuth.uid)
                 .collection('Trousseau')
                 .onSnapshot(onResult, onError);
         }
@@ -72,11 +72,16 @@ const KeychainScreen = () => {
         auth()
             .signOut()
             .then(() => {
-                console.log('Utilisateur délogué !');
+                console.log('KeychainScreen: Utilisateur délogué !');
+
+                // On renseigne la page parente que le user est loggué => TRUE
+                route.params.parentCallback(false);
+                /*
                 navigation.reset({
                     index: 0,
                     routes: [{ name: 'Identification' }]
                 })
+                */
             });
     }
     /*
@@ -106,13 +111,13 @@ const KeychainScreen = () => {
     }
 
     const updateItem = (id: string): void => {
-        console.log("update " + id);
+        console.log("KeychainScreen: update " + id);
 
         //setSelectedId(item.id)
     }
 
     const deleteItem = (id: string): void => {
-        console.log("delete " + id);
+        console.log("KeychainScreen: delete " + id);
 
         firestore()
             .collection('Users')
@@ -154,22 +159,20 @@ const KeychainScreen = () => {
     return (
         <View style={styles.container}>
 
-            <Text style={styles.count}>{countData} utilisateur{countData > 1 && 's'}</Text>
+            <Text style={styles.count}>{countData} compte{countData > 1 && 's'}</Text>
 
-            <ScrollView>
-                <FlatList
-                    data={data}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id}
-                    extraData={selectedId}
-                    ItemSeparatorComponent={ItemSeparator}
-                />
-                <Pressable onPress={addItem} style={[styles.pressable, { alignSelf: 'flex-end' }]}>
-                    <View style={styles.button}>
-                        <Text style={styles.text}>Ajouter</Text>
-                    </View>
-                </Pressable>
-            </ScrollView>
+            <FlatList
+                data={data}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+                extraData={selectedId}
+                ItemSeparatorComponent={ItemSeparator}
+            />
+            <Pressable onPress={addItem} style={[styles.pressable, { alignSelf: 'flex-end' }]}>
+                <View style={styles.button}>
+                    <Text style={styles.text}>Ajouter</Text>
+                </View>
+            </Pressable>
 
             <View style={{ alignItems: 'center', marginTop: 20 }}>
                 <Pressable onPress={logout} style={styles.pressable}>

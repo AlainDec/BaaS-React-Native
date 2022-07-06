@@ -12,22 +12,25 @@ import auth from '@react-native-firebase/auth';
 type HomeScreenNavigationProp = NativeStackNavigationProp<HomeStackScreenParamList>
 
 // -------- INSCRIPTION -------------
-const SignUpScreen = () => {
+const SignUpScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackScreenParamList, 'Identification'>) => {
+//const SignUpScreen = () => {
 
-    const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
+    //const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
     const [data, setData] = useState(); // données saisie dans le formulaire
     const [error, setError] = useState<string>('');
 
     const callbackData = (childData: any) => {
-        console.log('------callBackForm parent-------');
+        console.log('SignUpScreen: ------callBackForm parent-------');
         setData(childData);
         console.log(childData);
 
         auth()
             .createUserWithEmailAndPassword(childData.email, childData.password)
             .then(() => {
-                console.log("Compte d'utilisateur créé et logué !");
-                navigation.navigate('Dashboard');
+                console.log("SignUpScreen: Compte d'utilisateur créé et logué !");
+                //navigation.navigate('Dashboard');
+                // On renseigne la page parente que le user est loggué => TRUE
+                route.params.parentCallback(true);
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {

@@ -12,23 +12,30 @@ import auth from '@react-native-firebase/auth';
 type HomeScreenNavigationProp = NativeStackNavigationProp<HomeStackScreenParamList>
 
 // -------- IDENTIFICATION -------------
-// const SignInScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackScreenParamList, 'Identification'>) => {
-const SignInScreen = () => {
+const SignInScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackScreenParamList, 'Identification'>) => {
+//const SignInScreen = () => {
+
+    // ENVOYE : itemId: "coucou"
+    // LECTURE ICI : console.log("PARAMS : ------------ " + route.params.itemId);
+    console.log("SignInScreen: route.params.parentCallback = " + route.params.parentCallback);
 
     //const navigation = useNavigation<HomeScreenNavigationProp>();
-    const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
+    //const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
     const [data, setData] = useState(); // données saisie dans le formulaire
     const [error, setError] = useState<string>('');
 
     const callbackData = (childData: any) => {
-        console.log('------callBackForm parent-------');
+        console.log('SignInScreen: ------callBackForm parent-------');
         setData(childData);
         console.log(childData);
 
         auth()
             .signInWithEmailAndPassword(childData.email, childData.password)
             .then(() => {
-                console.log('Utilisateur logué !');
+                console.log('SignInScreen: Utilisateur logué !');
+
+                // On renseigne la page parente que le user est loggué => TRUE
+                route.params.parentCallback(true);
                 
                 //navigation.navigate('Dashboard');
             })
