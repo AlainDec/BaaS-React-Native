@@ -34,8 +34,6 @@ export const AddUpdateKeychainForm = (props: IForm) => {
 
     const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
 
-    const [checked, setChecked] = useState<string>("a"); // initial choice : site
-
     // REACT HOOK FORM ----------------------------------------------------
     const validationSchema = Yup.object({
         email: Yup.string().email('Format d\'email invalide').required('Veuillez saisir votre email'),
@@ -44,7 +42,7 @@ export const AddUpdateKeychainForm = (props: IForm) => {
             "Doit contenir 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial"
         ).required('Veuillez saisir votre mot de passe'),
         name: Yup.string().required('Veuillez saisir un nom'),
-        type: Yup.string(),
+        type: Yup.string().required('Veuillez choisir un type de support'),
     });
 
     // React Hook Form
@@ -131,40 +129,34 @@ export const AddUpdateKeychainForm = (props: IForm) => {
             <Controller
                 control={control}
                 rules={{ required: true }}
-                render={({ field: { value }, fieldState: { error } }) => (
-                    <RadioButton.Group onValueChange={newValue => setChecked(newValue)} value={value}>
-                            <RadioButton
-                                value={"a"}
-                                status={checked === 'a' ? 'checked' : 'unchecked'}
-                            />
-                            <RadioButton
-                                value={"b"}
-                                status={checked === 'b' ? 'checked' : 'unchecked'}
-                            />
+                render={({ field: { value, onChange }, fieldState: { error } }) => (
+                    <RadioButton.Group
+                        onValueChange={onChange}
+                        value={value}>
+                        <View style={{ flexDirection: 'row', marginTop: 25 }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <RadioButton
+                                    value={"a"}
+                                    //status={checked === 'a' ? 'checked' : 'unchecked'}
+                                    status={'unchecked'}
+                                />
+                                <Text>Site internet</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 5 }}>
+                                <RadioButton
+                                    value={"b"}
+                                    //status={checked === 'b' ? 'checked' : 'unchecked'}
+                                    status={'unchecked'}
+                                />
+                                <Text>Application mobile</Text>
+                            </View>
+                        </View>
                     </RadioButton.Group>
-                    // <View style={{flexDirection: 'row', marginTop: 25}}>
-                    //     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    //         <RadioButton
-                    //             value={value}
-                    //             status={checked === 0 ? 'checked' : 'unchecked'}
-                    //             onPress={() => setChecked(0)}
-                    //         />
-                    //         <Text>Site internet</Text>
-                    //     </View>
-                    //     <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 5 }}>
-                    //         <RadioButton
-                    //             value={value}
-                    //             status={checked === 1 ? 'checked' : 'unchecked'}
-                    //             onPress={() => setChecked(1)}
-                    //         />
-                    //         <Text>Application mobile</Text>
-                    //     </View>
-                    // </View>
                 )}
                 name="type"
             />
-
-            {error !== '' && <Text style={styles.textError}>{error}</Text>}
+            {/* gestion de l'erreur pour le radio button uniquement */}
+            {errors.type && errors.type.type === "required" && <Text style={styles.txtError}>{errors.type.message}</Text>}
 
             <View style={{ alignItems: 'center', marginTop: 20 }}>
                 <Pressable onPress={handleSubmit(onSubmit)} style={styles.pressable}>
@@ -174,7 +166,7 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                 </Pressable>
             </View>
 
-        </ScrollView>
+        </ScrollView >
     );
 }
 
@@ -208,7 +200,4 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-    textError: {
-        color: 'red',
-    }
 })
