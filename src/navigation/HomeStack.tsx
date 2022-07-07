@@ -50,6 +50,8 @@ const HomeStack = (): JSX.Element => {
 
 
     const handleCallback = (childData = false) => {
+        console.log("childData = " + childData);
+
         setUserLoggedIn(childData);
     }
 

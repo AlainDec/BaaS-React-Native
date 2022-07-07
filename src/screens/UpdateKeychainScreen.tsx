@@ -2,10 +2,13 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { AddUpdateKeychainForm } from '../components/AddUpdateKeychainForm';
 
-const UpdateKeychainScreen = (itemId: string) => {
+const UpdateKeychainScreen = ({ route }) => {
+
+    const { itemId } = route.params;
+
     return (
         <View style={styles.container}>
-            <AddUpdateKeychainForm formType='add' itemId={itemId} />
+            <AddUpdateKeychainForm formType='update' itemId={itemId} />
         </View>
     )
 }

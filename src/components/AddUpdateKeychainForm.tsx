@@ -18,7 +18,7 @@ import firestore from '@react-native-firebase/firestore';
 
 // ------- Formulaire
 type FormValues = {
-    email: string;
+    login: string;
     password: string;
     name: string;
     type: string;
@@ -34,18 +34,71 @@ export const AddUpdateKeychainForm = (props: IForm) => {
     const { formType, itemId } = props;
 
     console.log("OPERATION : " + formType);
+    console.log("ITEMID : " + itemId);
 
     const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
 
+    const [userUpdatedata, setUserUpdateData] = useState<FormValues>({login:"", password:"", name:"", type:""});
+    let userAuth = auth().currentUser;
+
+    useEffect(() => {
+        if (formType === 'update') {
+            let userAuth = auth().currentUser;
+            if (userAuth && (itemId !== '' || itemId !== undefined)) {
+                //const user = auth().currentUser;
+                console.log("AddUpdateKeychainForm: utilisateur = " + userAuth?.uid);
+                // Listener sur les modifications de la requête. Il surveille la collection "Trousseau"
+                // lorsque les documents sont modifiés (suppression, ajout, modification)
+                // Donc si j'ajoute un champ dans Firebase, en web, l'app mobile affichera en temps réel
+                // la nouvelle ligne, sans refresh manuel !
+                console.log("AddUpdateKeychainForm: useEffect()");
+                console.log("AddUpdateKeychainForm: ligne concernée : " + itemId);
+
+                // récupération des données
+                async (userId: string | undefined) => {
+                    console.log("dans async");
+                    let docRef = firestore()
+                                .collection('Users')
+                                .doc(userAuth?.uid)
+                                .collection('Trousseau')
+                                .doc(itemId);
+
+                    try {
+                        var doc = await docRef.get()
+                        if (doc.exists) {
+                            console.log('---------- data récupérées ttt');
+                            console.log(doc.data());
+                            let toto = doc.data()
+                            // L'argument de type 'DocumentData' n'est pas attribuable au paramètre de type 'SetStateAction<FormValues>'.
+                            // Le type 'DocumentData' n'a pas les propriétés suivantes du type 'FormValues': email, password, name, typets(2345)
+                            if(toto != undefined){
+                                
+                                // setUserUpdateData({login :toto.login, name :toto.name, password : toto.password, type :toto.type});
+                                setUserUpdateData(toto as FormValues);
+                            }
+                            return doc.data();
+                        } else {
+                            console.log("--------- PAS DE DOC");
+                        }
+                    } catch (error) {
+                        console.log("---------- Erreur GET:", error);
+                    };
+                }
+            }
+        }
+    }, []);
+
+    console.log("email: " + userUpdatedata?.login);
+
     // REACT HOOK FORM ----------------------------------------------------
     const validationSchema = Yup.object({
-        email: Yup.string().email('Format d\'email invalide').required('Veuillez saisir votre email'),
+        email: Yup.string().email("Format d'email invalide").required("Veuillez saisir votre email"),
         password: Yup.string().matches(
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/,
             "Doit contenir 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial"
-        ).required('Veuillez saisir votre mot de passe'),
-        name: Yup.string().required('Veuillez saisir un nom'),
-        type: Yup.string().required('Veuillez choisir un type de support'),
+        ).required("Veuillez saisir votre mot de passe"),
+        name: Yup.string().required("Veuillez saisir un nom"),
+        type: Yup.string().required("Veuillez choisir un type de support"),
     });
 
     // React Hook Form
@@ -71,13 +124,13 @@ export const AddUpdateKeychainForm = (props: IForm) => {
             console.log(data);
 
             switch (formType) {
-                case 'add' :
+                case 'add':
                     firestore()
                         .collection('Users')
                         .doc(userAuth.uid)
                         .collection('Trousseau')
                         .add({
-                            login: data.email,
+                            login: data.login,
                             name: data.name,
                             password: data.password,
                             type: data.type
@@ -86,14 +139,14 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                             console.log('APP / SITE AJOUTE !');
                         });
                     break;
-                case 'update' :
+                case 'update':
                     firestore()
                         .collection('Users')
                         .doc(userAuth.uid)
                         .collection('Trousseau')
                         .doc(itemId)
-                        .set({
-                            login: data.email,
+                        .update({
+                            login: data.login,
                             name: data.name,
                             password: data.password,
                             type: data.type
@@ -102,7 +155,7 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                             console.log('APP / SITE MIS A JOUR !');
                         });
                     break;
-                default: 
+                default:
             }
             // TODO ajouter les .then et 3.error
         }
@@ -124,7 +177,7 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                 rules={{ required: true, maxLength: 50, }}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                     <InputCustom
-                        value={value}
+                        value={userUpdatedata?.login !== undefined ? userUpdatedata.login : value}
                         placeholder="Email"
                         error={!!error}
                         errorDetails={error?.message}
@@ -133,7 +186,7 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                         keyboard="email-address"
                     />
                 )}
-                name="email"
+                name="login"
             />
 
             <Controller
@@ -208,7 +261,7 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                     </View>
                 </Pressable>
             </View>
-
+                    <Text>*{userUpdatedata.login}</Text>
         </ScrollView >
     );
 }

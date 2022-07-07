@@ -117,7 +117,7 @@ const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackS
     const updateItem = (itemId: string): void => {
         console.log("KeychainScreen: update " + itemId);
 
-        navigation.navigate("AddKeychain", {
+        navigation.navigate("UpdateKeychain", {
             itemId: itemId
         });
         //setSelectedId(item.id)
