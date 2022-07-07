@@ -7,7 +7,6 @@ import { HomeStackScreenParamList } from "../navigation/HomeStack";
 // Firebase
 //import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-// Firebase
 import auth from '@react-native-firebase/auth';
 // Icônes
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -17,9 +16,10 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<HomeStackScreenParamLi
 interface TData {
     id: string;
     login: string;
+    password: string;
     name: string;
     type: string;
-    userId: string;
+    //userId: string;
 }
 
 const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackScreenParamList, 'Identification'>) => {
@@ -92,6 +92,7 @@ const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackS
             type: "web"
         })
     */
+
     const addItem = (): void => {
         console.log("add ");
 
@@ -113,9 +114,12 @@ const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackS
         */
     }
 
-    const updateItem = (id: string): void => {
-        console.log("KeychainScreen: update " + id);
+    const updateItem = (itemId: string): void => {
+        console.log("KeychainScreen: update " + itemId);
 
+        navigation.navigate("AddKeychain", {
+            itemId: itemId
+        });
         //setSelectedId(item.id)
     }
 
@@ -148,7 +152,7 @@ const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackS
             <View style={{ flexDirection: 'row' }}>
                 <Text style={[styles.textItem, { width: '40%' }]}>{item.login}</Text>
                 <Text style={[styles.textItem, { width: '25%' }]}>{item.name}</Text>
-                <Text style={[styles.textItem, { width: '20%' }]}>{item.type}</Text>
+                <Text style={[styles.textItem, { width: '20%' }]}>{item.type === 'a' ? 'Web' : 'Mobile'}</Text>
                 <TouchableOpacity onPress={() => updateItem(item.id)}>
                     <Text style={[styles.textItem, { backgroundColor, width: '7%', minWidth: 25 }]}> U</Text>
                 </TouchableOpacity>

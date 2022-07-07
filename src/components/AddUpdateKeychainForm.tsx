@@ -11,6 +11,9 @@ import { RadioButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { HomeStackScreenParamList } from "../navigation/HomeStack";
+// Firebase
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 
 // ------- Formulaire
@@ -19,18 +22,18 @@ type FormValues = {
     password: string;
     name: string;
     type: string;
-    operation: 'add' | 'update';
 }
 interface IForm {
     formType: 'add' | 'update';
-    //callBackTheData: (data: FormValues) => void;
-    error?: string;
+    itemId?: string;
 }
 
 
 export const AddUpdateKeychainForm = (props: IForm) => {
 
-    const { formType/*, callBackTheData*/, error } = props;
+    const { formType, itemId } = props;
+
+    console.log("OPERATION : " + formType);
 
     const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
 
@@ -54,18 +57,58 @@ export const AddUpdateKeychainForm = (props: IForm) => {
     const { control, handleSubmit, formState: { errors } } = useForm<FormValues>({
         mode: 'onBlur',
         resolver: yupResolver(validationSchema),
-        defaultValues: {
-            operation: formType
-        } // utile pour simuler un champ hidden qui précise si je fais un login ou création de login
     })
 
     const onSubmit: any = (data: FormValues) => {
         console.log('---data enfant----');
-        console.log(data);
+        //console.log(data);
         //callBackTheData(data);
 
+        let userAuth = auth().currentUser;
+
+        if (userAuth && data !== undefined) {
+            // Ajout des data en DB
+            console.log(data);
+
+            switch (formType) {
+                case 'add' :
+                    firestore()
+                        .collection('Users')
+                        .doc(userAuth.uid)
+                        .collection('Trousseau')
+                        .add({
+                            login: data.email,
+                            name: data.name,
+                            password: data.password,
+                            type: data.type
+                        })
+                        .then(() => {
+                            console.log('APP / SITE AJOUTE !');
+                        });
+                    break;
+                case 'update' :
+                    firestore()
+                        .collection('Users')
+                        .doc(userAuth.uid)
+                        .collection('Trousseau')
+                        .doc(itemId)
+                        .set({
+                            login: data.email,
+                            name: data.name,
+                            password: data.password,
+                            type: data.type
+                        })
+                        .then(() => {
+                            console.log('APP / SITE MIS A JOUR !');
+                        });
+                    break;
+                default: 
+            }
+            // TODO ajouter les .then et 3.error
+        }
+
         // navigation.navigate('Identification');
-        //navigation.navigate('Dashboard');
+        navigation.goBack();
     }
 
     return (
