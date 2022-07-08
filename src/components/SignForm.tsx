@@ -51,7 +51,7 @@ export const SignForm = (props: IForm) => {
         resolver: yupResolver(validationSchema),
         defaultValues: {
             operation: formType
-        } // utile pour simuler un champ hidden qui précise si je fais un login ou création de login
+        } // utile pour simuler un champ hidden qui précise si je fais un email ou création de email
     })
 
     const onSubmit: any = (data: FormValues) => {

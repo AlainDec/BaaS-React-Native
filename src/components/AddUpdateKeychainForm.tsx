@@ -18,7 +18,7 @@ import firestore from '@react-native-firebase/firestore';
 
 // ------- Formulaire
 type FormValues = {
-    login: string;
+    email: string;
     password: string;
     name: string;
     type: string;
@@ -31,64 +31,21 @@ interface IForm {
 
 export const AddUpdateKeychainForm = (props: IForm) => {
 
+    console.log("------------------------------------------------------------------------------- AddUpdateKeychainForm");
+    console.log("OPERATION : " + formType + "ITEMID (ligne concernée) : " + itemId);
+    
     const { formType, itemId } = props;
-
-    console.log("OPERATION : " + formType);
-    console.log("ITEMID : " + itemId);
-
     const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
 
-    const [userUpdatedata, setUserUpdateData] = useState<FormValues>({login:"", password:"", name:"", type:""});
     let userAuth = auth().currentUser;
 
-    useEffect(() => {
-        if (formType === 'update') {
-            let userAuth = auth().currentUser;
-            if (userAuth && (itemId !== '' || itemId !== undefined)) {
-                //const user = auth().currentUser;
-                console.log("AddUpdateKeychainForm: utilisateur = " + userAuth?.uid);
-                // Listener sur les modifications de la requête. Il surveille la collection "Trousseau"
-                // lorsque les documents sont modifiés (suppression, ajout, modification)
-                // Donc si j'ajoute un champ dans Firebase, en web, l'app mobile affichera en temps réel
-                // la nouvelle ligne, sans refresh manuel !
-                console.log("AddUpdateKeychainForm: useEffect()");
-                console.log("AddUpdateKeychainForm: ligne concernée : " + itemId);
-
-                // récupération des données
-                async (userId: string | undefined) => {
-                    console.log("dans async");
-                    let docRef = firestore()
-                                .collection('Users')
-                                .doc(userAuth?.uid)
-                                .collection('Trousseau')
-                                .doc(itemId);
-
-                    try {
-                        var doc = await docRef.get()
-                        if (doc.exists) {
-                            console.log('---------- data récupérées ttt');
-                            console.log(doc.data());
-                            let toto = doc.data()
-                            // L'argument de type 'DocumentData' n'est pas attribuable au paramètre de type 'SetStateAction<FormValues>'.
-                            // Le type 'DocumentData' n'a pas les propriétés suivantes du type 'FormValues': email, password, name, typets(2345)
-                            if(toto != undefined){
-                                
-                                // setUserUpdateData({login :toto.login, name :toto.name, password : toto.password, type :toto.type});
-                                setUserUpdateData(toto as FormValues);
-                            }
-                            return doc.data();
-                        } else {
-                            console.log("--------- PAS DE DOC");
-                        }
-                    } catch (error) {
-                        console.log("---------- Erreur GET:", error);
-                    };
-                }
-            }
-        }
-    }, []);
-
-    console.log("email: " + userUpdatedata?.login);
+    // Va stocker les données lues en DB dans le cas d'un update avec passage de l'ID de ligne en paramètre
+    const [defaultValuesDb, setDefaultValuesDb] = useState({
+        email: '',
+        password: '',
+        name: '',
+        type: ''
+    });
 
     // REACT HOOK FORM ----------------------------------------------------
     const validationSchema = Yup.object({
@@ -106,11 +63,67 @@ export const AddUpdateKeychainForm = (props: IForm) => {
     // - control permet de wraper les champs avec React Tool Form
     // - handleSubmit pour submit le form
     // - formState pour savoir où en est le state et récupérer les erreurs
-    // formValue pour que le useForm connaisse bien les types des champs
-    const { control, handleSubmit, formState: { errors } } = useForm<FormValues>({
+    // - reset, permet de remplacer les champs par un nouveau contenu, voir les defaultValues
+    // formValues pour que le useForm connaisse bien les types des champs
+    const { control, handleSubmit, formState: { errors }, reset } = useForm<FormValues>({
         mode: 'onBlur',
         resolver: yupResolver(validationSchema),
+        defaultValues: defaultValuesDb, // Si update : pré-rempli les champs avec les données de la DB
     })
+
+    // Dans le cas de l'update, va lire les données en DB pour remplir les champs en defaultValues
+    useEffect(() => {
+        console.log("AddUpdateKeychainForm: useEffect()");
+        if (formType === 'update') {
+            let userAuth = auth().currentUser;
+            if (userAuth && (itemId !== '' || itemId !== undefined)) {
+                //const user = auth().currentUser;
+                console.log("AddUpdateKeychainForm: utilisateur = " + userAuth?.uid);
+                // Listener sur les modifications de la requête. Il surveille la collection "Trousseau"
+                // lorsque les documents sont modifiés (suppression, ajout, modification)
+                // Donc si j'ajoute un champ dans Firebase, en web, l'app mobile affichera en temps réel
+                // la nouvelle ligne, sans refresh manuel !
+
+                // récupération des données
+                async function getItemDB() {
+                    console.log("dans async");
+                    let docRef = firestore()
+                                .collection('Users')
+                                .doc(userAuth?.uid)
+                                .collection('Trousseau')
+                                .doc(itemId);
+
+                    try {
+                        var doc = await docRef.get()
+                        if (doc.exists) {
+                            console.log('---------- data récupérées ttt');
+                            console.log(doc.data());
+                            // Il faut ajouter un 'as FormValues' afin que les données lues en DB soient au même format que mes données.
+                            // Sinon, l'erreur suivante sera retournée :
+                            //   L'argument de type 'DocumentData' n'est pas attribuable au paramètre de type 'SetStateAction<FormValues>'.
+                            //   Le type 'DocumentData' n'a pas les propriétés suivantes du type 'FormValues': email, password, name, type - ts(2345)
+                            let dataDb = doc.data() as FormValues;
+                            if(dataDb !== undefined){
+                                
+                                // Ca fonctionne ci-dessous en com, mais c'est encore mieux avec un 'as'
+                                // setUserUpdateData({email :toto.email, name :toto.name, password : toto.password, type :toto.type});
+                                setDefaultValuesDb(dataDb);
+                                // On reset les champs pour les préremplir avec la DB.
+                                reset(dataDb)
+                            }
+                            return doc.data();
+                        } else {
+                            console.log("--------- PAS DE DOC");
+                        }
+                    } catch (error) {
+                        console.log("---------- Erreur GET:", error);
+                    };
+                }
+                getItemDB();
+            }
+        }
+    }, [reset]);
+
 
     const onSubmit: any = (data: FormValues) => {
         console.log('---data enfant----');
@@ -130,7 +143,7 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                         .doc(userAuth.uid)
                         .collection('Trousseau')
                         .add({
-                            login: data.login,
+                            email: data.email,
                             name: data.name,
                             password: data.password,
                             type: data.type
@@ -146,7 +159,7 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                         .collection('Trousseau')
                         .doc(itemId)
                         .update({
-                            login: data.login,
+                            email: data.email,
                             name: data.name,
                             password: data.password,
                             type: data.type
@@ -177,7 +190,7 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                 rules={{ required: true, maxLength: 50, }}
                 render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
                     <InputCustom
-                        value={userUpdatedata?.login !== undefined ? userUpdatedata.login : value}
+                        value={value}
                         placeholder="Email"
                         error={!!error}
                         errorDetails={error?.message}
@@ -186,7 +199,7 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                         keyboard="email-address"
                     />
                 )}
-                name="login"
+                name="email"
             />
 
             <Controller
@@ -261,7 +274,6 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                     </View>
                 </Pressable>
             </View>
-                    <Text>*{userUpdatedata.login}</Text>
         </ScrollView >
     );
 }

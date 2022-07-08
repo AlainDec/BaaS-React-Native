@@ -15,7 +15,7 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<HomeStackScreenParamLi
 
 interface TData {
     id: string;
-    login: string;
+    email: string;
     password: string;
     name: string;
     type: string;
@@ -32,6 +32,7 @@ const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackS
     function onResult(querySnapshot: any) {
         console.log('KeychainScreen: Récupération de la collection des users');
 
+        // Récupération des datas en DB
         let items: TData[] = [];
         querySnapshot.forEach((snapshot: any) => {
             console.log("KeychainScreen: ID=" + snapshot.id);
@@ -52,7 +53,6 @@ const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackS
     }
 
     useEffect(() => {
-        //const user = auth().currentUser;
         console.log("KeychainScreen: utilisateur = " + userAuth?.uid);
         // Listener sur les modifications de la requête. Il surveille la collection "Trousseau"
         // lorsque les documents sont modifiés (suppression, ajout, modification)
@@ -76,22 +76,8 @@ const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackS
 
                 // On renseigne la page parente que le user est loggué => TRUE
                 route.params.parentCallback(false);
-                /*
-                navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'Identification' }]
-                })
-                */
             });
     }
-    /*
-        firestore().collection('Trousseau').add({
-            login: 'dddxxx@yyy.zz',
-            name: "truc",
-            password: "xxxxxxxx",
-            type: "web"
-        })
-    */
 
     const addItem = (): void => {
         console.log("add ");
@@ -104,7 +90,7 @@ const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackS
                 .doc(userAuth.uid)
                 .collection('Trousseau')
                 .add({
-                    login: 'dddxxx@yyy.zz',
+                    email: 'dddxxx@yyy.zz',
                     name: "truc",
                     password: "xxxxxxxx",
                     type: "web"
@@ -120,7 +106,6 @@ const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackS
         navigation.navigate("UpdateKeychain", {
             itemId: itemId
         });
-        //setSelectedId(item.id)
     }
 
     const deleteItem = (id: string): void => {
@@ -135,7 +120,6 @@ const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackS
             .then(() => {
                 console.log("user " + id + " deleted");
             });
-        //setSelectedId(item.id)
     }
 
     const ItemSeparator = () => <View style={{
@@ -150,11 +134,10 @@ const KeychainScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackS
 
         return (
             <View style={{ flexDirection: 'row' }}>
-                <Text style={[styles.textItem, { width: '40%' }]}>{item.login}</Text>
-                <Text style={[styles.textItem, { width: '25%' }]}>{item.name}</Text>
-                <Text style={[styles.textItem, { width: '20%' }]}>{item.type === 'a' ? 'Web' : 'Mobile'}</Text>
-                <TouchableOpacity onPress={() => updateItem(item.id)}>
-                    <Text style={[styles.textItem, { backgroundColor, width: '7%', minWidth: 25 }]}> U</Text>
+                <TouchableOpacity onPress={() => updateItem(item.id)} style={{ flexDirection: 'row' }}>
+                    <Text style={[styles.textItem, { width: '40%' }]}>{item.email}</Text>
+                    <Text style={[styles.textItem, { width: '25%' }]}>{item.name}</Text>
+                    <Text style={[styles.textItem, { width: '20%' }]}>{item.type === 'a' ? 'Web' : 'Mobile'}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => deleteItem(item.id)}>
                     <Text style={[styles.textItem, { backgroundColor, width: '7%', minWidth: 25 }]}> D</Text>

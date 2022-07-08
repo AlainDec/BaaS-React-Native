@@ -3,6 +3,7 @@ import { KeyboardTypeOptions, TextInput, Text, View, StyleSheet } from 'react-na
 
 interface InputCustomProps {
     placeholder?: string;
+    defaultValue?: string;
     value: string;
     password?: boolean;
     keyboard?: KeyboardTypeOptions;
@@ -14,6 +15,7 @@ interface InputCustomProps {
 
 export const InputCustom: React.FC<InputCustomProps> = ({
     placeholder,
+    defaultValue,
     value,
     password,
     keyboard = 'default',
@@ -28,6 +30,7 @@ export const InputCustom: React.FC<InputCustomProps> = ({
             <TextInput
                 style={[styles.inputBase, error ? styles.inputError : styles.input]}
                 placeholder={placeholder}
+                defaultValue={defaultValue}
                 value={value}
                 // password
                 secureTextEntry={password}
