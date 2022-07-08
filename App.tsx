@@ -7,28 +7,18 @@ import HomeStack from './src/navigation/HomeStack';
 import { AuthProvider } from './src/navigation/AuthProvider';
 // Firebase
 import auth from '@react-native-firebase/auth';
+// React native paper
+import { Provider as PaperProvider } from 'react-native-paper';
 
 const App = () => {
 
-/*
-    const [userLoggedIn, setUserLoggedIn] = useState<boolean>(false);
-
-    React.useEffect(() => {
-        let userAuth = auth().currentUser;
-        console.log(userAuth?.uid);
-        userAuth && setUserLoggedIn(false);
-    }, [])
-
-    const handleCallback = (childData) => {
-        setUserLoggedIn(childData);
-    }
-*/
-//auth={userLoggedIn}
     return (
         <AuthProvider>
             <SafeAreaView style={{ flex: 1 }} >
                 <NavigationContainer>
-                    <HomeStack   />
+                    <PaperProvider>
+                        <HomeStack />
+                    </PaperProvider>
                 </NavigationContainer>
             </SafeAreaView>
         </AuthProvider>

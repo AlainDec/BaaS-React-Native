@@ -14,6 +14,8 @@ import { HomeStackScreenParamList } from "../navigation/HomeStack";
 // Firebase
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+// Icônes
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 // ------- Formulaire
@@ -32,10 +34,12 @@ interface IForm {
 export const AddUpdateKeychainForm = (props: IForm) => {
 
     console.log("------------------------------------------------------------------------------- AddUpdateKeychainForm");
-    console.log("OPERATION : " + formType + "ITEMID (ligne concernée) : " + itemId);
-    
-    const { formType, itemId } = props;
+
     const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
+
+    const { errorOutOfForm, setErrorOutOfForm } = useState<string>('');
+    const { formType, itemId } = props;
+    console.log("OPERATION: " + formType + " - ITEMID (ligne concernée): " + itemId);
 
     let userAuth = auth().currentUser;
 
@@ -73,69 +77,80 @@ export const AddUpdateKeychainForm = (props: IForm) => {
 
     // Dans le cas de l'update, va lire les données en DB pour remplir les champs en defaultValues
     useEffect(() => {
-        console.log("AddUpdateKeychainForm: useEffect()");
-        if (formType === 'update') {
-            let userAuth = auth().currentUser;
-            if (userAuth && (itemId !== '' || itemId !== undefined)) {
-                //const user = auth().currentUser;
-                console.log("AddUpdateKeychainForm: utilisateur = " + userAuth?.uid);
-                // Listener sur les modifications de la requête. Il surveille la collection "Trousseau"
-                // lorsque les documents sont modifiés (suppression, ajout, modification)
-                // Donc si j'ajoute un champ dans Firebase, en web, l'app mobile affichera en temps réel
-                // la nouvelle ligne, sans refresh manuel !
 
-                // récupération des données
-                async function getItemDB() {
-                    console.log("dans async");
-                    let docRef = firestore()
-                                .collection('Users')
-                                .doc(userAuth?.uid)
-                                .collection('Trousseau')
-                                .doc(itemId);
+        if (formType === 'update' &&
+            userAuth &&
+            (itemId !== '' || itemId !== undefined)) {
 
-                    try {
-                        var doc = await docRef.get()
-                        if (doc.exists) {
-                            console.log('---------- data récupérées ttt');
-                            console.log(doc.data());
-                            // Il faut ajouter un 'as FormValues' afin que les données lues en DB soient au même format que mes données.
-                            // Sinon, l'erreur suivante sera retournée :
-                            //   L'argument de type 'DocumentData' n'est pas attribuable au paramètre de type 'SetStateAction<FormValues>'.
-                            //   Le type 'DocumentData' n'a pas les propriétés suivantes du type 'FormValues': email, password, name, type - ts(2345)
-                            let dataDb = doc.data() as FormValues;
-                            if(dataDb !== undefined){
-                                
-                                // Ca fonctionne ci-dessous en com, mais c'est encore mieux avec un 'as'
-                                // setUserUpdateData({email :toto.email, name :toto.name, password : toto.password, type :toto.type});
-                                setDefaultValuesDb(dataDb);
-                                // On reset les champs pour les préremplir avec la DB.
-                                reset(dataDb)
-                            }
-                            return doc.data();
-                        } else {
-                            console.log("--------- PAS DE DOC");
+            console.log("AddUpdateKeychainForm: utilisateur = " + userAuth?.uid);
+
+            // Listener sur les modifications de la requête. Il surveille la collection "Trousseau"
+            // lorsque les documents sont modifiés (suppression, ajout, modification)
+            // Donc si j'ajoute un champ dans Firebase, en web, l'app mobile affichera en temps réel
+            // la nouvelle ligne, sans refresh manuel !
+            // récupération des données
+            async function getItemDB() {
+
+                let docRef = firestore()
+                    .collection('Users')
+                    .doc(userAuth?.uid)
+                    .collection('Trousseau')
+                    .doc(itemId);
+
+                try {
+                    var doc = await docRef.get()
+                    if (doc.exists) {
+                        console.log('Data récupérées: ');
+                        console.log(doc.data());
+                        // Il faut ajouter un 'as FormValues' afin que les données lues en DB soient au même format que mes données.
+                        // Sinon, l'erreur suivante sera retournée :
+                        //   L'argument de type 'DocumentData' n'est pas attribuable au paramètre de type 'SetStateAction<FormValues>'.
+                        //   Le type 'DocumentData' n'a pas les propriétés suivantes du type 'FormValues': email, password, name, type - ts(2345)
+                        let dataDb = doc.data() as FormValues;
+                        if (dataDb !== undefined) {
+
+                            // Ca fonctionne ci-dessous en com, mais c'est encore mieux avec un 'as'
+                            // setUserUpdateData({email :toto.email, name :toto.name, password : toto.password, type :toto.type});
+                            setDefaultValuesDb(dataDb);
+                            // On reset les champs pour les préremplir avec la DB.
+                            reset(dataDb)
                         }
-                    } catch (error) {
-                        console.log("---------- Erreur GET:", error);
-                    };
-                }
-                getItemDB();
+                        return doc.data();
+                    } else {
+                        setErrorOutOfForm("--------- PAS DE DOC");
+                        console.log("--------- PAS DE DOC");
+                    }
+                } catch (error) {
+                    console.log("---------- Erreur GET:", error);
+                };
             }
+            getItemDB();
         }
     }, [reset]);
 
+    const deleteItem = (): void => {
+        console.log("KeychainScreen: delete " + itemId);
+
+        firestore()
+            .collection('Users')
+            .doc(userAuth?.uid)
+            .collection('Trousseau')
+            .doc(itemId)
+            .delete()
+            .then(() => {
+                console.log("line " + itemId + " deleted");
+            });
+        
+        navigation.goBack();
+    }
 
     const onSubmit: any = (data: FormValues) => {
-        console.log('---data enfant----');
-        //console.log(data);
-        //callBackTheData(data);
-
-        let userAuth = auth().currentUser;
 
         if (userAuth && data !== undefined) {
-            // Ajout des data en DB
+            console.log('---data enfant----');
             console.log(data);
 
+            // Ajout/update des data en DB
             switch (formType) {
                 case 'add':
                     firestore()
@@ -238,7 +253,7 @@ export const AddUpdateKeychainForm = (props: IForm) => {
             <Controller
                 control={control}
                 rules={{ required: true }}
-                render={({ field: { value, onChange }, fieldState: { error } }) => (
+                render={({ field: { value, onChange } }) => (
                     <RadioButton.Group
                         onValueChange={onChange}
                         value={value}>
@@ -246,7 +261,6 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <RadioButton
                                     value={"a"}
-                                    //status={checked === 'a' ? 'checked' : 'unchecked'}
                                     status={'unchecked'}
                                 />
                                 <Text>Site internet</Text>
@@ -254,7 +268,6 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                             <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 5 }}>
                                 <RadioButton
                                     value={"b"}
-                                    //status={checked === 'b' ? 'checked' : 'unchecked'}
                                     status={'unchecked'}
                                 />
                                 <Text>Application mobile</Text>
@@ -267,7 +280,16 @@ export const AddUpdateKeychainForm = (props: IForm) => {
             {/* gestion de l'erreur pour le radio button uniquement */}
             {errors.type && errors.type.type === "required" && <Text style={styles.txtError}>{errors.type.message}</Text>}
 
-            <View style={{ alignItems: 'center', marginTop: 20 }}>
+            <View style={{ alignItems: 'center', marginTop: 20, flexDirection: 'row', justifyContent: 'space-around' }}>
+                {
+                    formType === 'update' && 
+                        <Pressable onPress={deleteItem}>
+                            <View style={[styles.buttonSmall, styles.alert]}>
+                                <Icon name="close-thick" size={28} color="white" />
+                            </View>
+                        </Pressable>
+
+                }
                 <Pressable onPress={handleSubmit(onSubmit)} style={styles.pressable}>
                     <View style={styles.button}>
                         <Text style={styles.text}>{formType === 'add' ? 'Ajouter' : 'Mettre à jour'}</Text>
@@ -293,6 +315,34 @@ const styles = StyleSheet.create({
         borderColor: 'white',
         borderWidth: 1,
         borderRadius: 30,
+    },
+    buttonSmall: {
+        marginVertical: 2,
+        paddingVertical: 6,
+        paddingHorizontal: 6,
+        backgroundColor: 'tomato',
+        borderColor: 'white',
+        borderWidth: 1,
+        borderRadius: 30,
+    },
+    alert: {
+        backgroundColor: 'red',
+    },
+    text: {
+        textAlign: 'center',
+        textTransform: 'uppercase',
+        color: 'white',
+        fontWeight: 'bold',
+    },
+    textSmall: {
+        textAlign: 'center',
+        textTransform: 'uppercase',
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 12,
+    },
+    title: {
+        fontSize: 14,
     },
     text: {
         textAlign: 'center',

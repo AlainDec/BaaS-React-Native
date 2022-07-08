@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createNativeStackNavigator, NativeStackNavigationProp } from "@react-navigation/native-stack";
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
@@ -42,7 +42,7 @@ const HomeStack = (): JSX.Element => {
     //console.log("AUTH = " + auth);
 
     const [userLoggedIn, setUserLoggedIn] = useState<Boolean>(false);
-    React.useEffect(() => {
+    useEffect(() => {
         let userAuth = auth().currentUser;
         console.log("HomeStack: userAuth?.uid = " + userAuth?.uid);
         userAuth && setUserLoggedIn(false);

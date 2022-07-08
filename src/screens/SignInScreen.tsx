@@ -13,10 +13,10 @@ type HomeScreenNavigationProp = NativeStackNavigationProp<HomeStackScreenParamLi
 
 // -------- IDENTIFICATION -------------
 const SignInScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackScreenParamList, 'Identification'>) => {
-//const SignInScreen = () => {
 
     // ENVOYE : itemId: "coucou"
     // LECTURE ICI : console.log("PARAMS : ------------ " + route.params.itemId);
+    console.log("------------------------------------------------------------------- SignInScreen");
     console.log("SignInScreen: route.params.parentCallback = " + route.params.parentCallback);
 
     //const navigation = useNavigation<HomeScreenNavigationProp>();
@@ -34,21 +34,24 @@ const SignInScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackScr
             .then(() => {
                 console.log('SignInScreen: Utilisateur logué !');
 
-                // On renseigne la page parente que le user est loggué => TRUE
+                // On renseigne la page parente que le user est connecté => TRUE
                 route.params.parentCallback(true);
-                
-                //navigation.navigate('Dashboard');
             })
             .catch(error => {
-                if (error.code === 'auth/user-not-found') {
-                    setError("Il n'y a pas d'utilisateur correspondant à cet identifiant.");
-                } else if (error.code === 'auth/wrong-password') {
-                    setError("Le mot de passe n'est pas valide ou l'utilisateur ne possède pas de mot de passe.");
-                } else if (error.code === 'auth/too-many-requests') {
-                    setError("Nous avons bloqué toutes les demandes provenant de cet appareil en raison d'une activité inhabituelle. Essayez à nouveau plus tard. [L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Vous pouvez le rétablir immédiatement en réinitialisant votre mot de passe ou vous pouvez réessayer plus tard. ]]");
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        setError("Il n'y a pas d'utilisateur correspondant à cet identifiant.");
+                        break;
+                    case 'auth/wrong-password': 
+                        setError("Le mot de passe n'est pas valide ou l'utilisateur ne possède pas de mot de passe.");
+                        break;
+                    case 'auth/too-many-requests':
+                        setError("Nous avons bloqué toutes les demandes provenant de cet appareil en raison d'une activité inhabituelle. Essayez à nouveau plus tard. [L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Vous pouvez le rétablir immédiatement en réinitialisant votre mot de passe ou vous pouvez réessayer plus tard. ]]");
+                        break;
+                    default:
+
                 }
                 console.log(error);
-                //console.error(error);
             });
     }
 
