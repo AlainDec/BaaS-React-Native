@@ -38,6 +38,11 @@ Installer les packages :
 $ npm install @react-navigation/native @react-navigation/native-stack  
 $ npm install react-native-screens react-native-safe-area-context  
 $ npm install react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view  
+Les icônes:  
+$ npm install --save react-native-vector-icons  
+$ npm i --save-dev @types/react-native-vector-icons  
+Editer le fichier android/app/build.gradle (MAIS PAS android/build.gradle) et ajouter en bas :  
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"  
 
 Installer React Native Firebase  
 $ npm install --save @react-native-firebase/app  
