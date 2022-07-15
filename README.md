@@ -29,6 +29,10 @@ Exercice 5 :
 Faire les différents écrans permettant d’afficher, de créer, de modifier et de supprimer les mots de passe enregistrés.  
 Pour l’affichage, les mots de passes devront être caché par défaut.  
 
+Exercice 6 :  
+En utilisant https://rnmmkv.vercel.app/#/ , faire en sorte que quand un utilisateur se connecte, cela enregistre ses identifiants de connexion pour qu’il puisse se loguer automatiquement les prochaines fois.  
+A la déconnexion, supprimer ses identifiants de connexion.  
+
 -------
 
 Avec la nouvelle version de React 18, react Native a des soucis avec React Navigation. Il faut donc créer le projet avec cette ligne de commande :  
