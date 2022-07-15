@@ -10,21 +10,19 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 // Icônes
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// Interfaces
+import { IData } from '../Interfaces';
+// Components
+import DataList from '../components/DataList';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<HomeStackScreenParamList>
 
-interface TData {
-    id: string;
-    email: string;
-    password: string;
-    name: string;
-    type: string;
-}
+
 
 const KeychainScreen = ({ route, navigation }: NativeStackNavigationProp<HomeStackScreenParamList, 'Identification'>) => {
 
     //const navigation = useNavigation<HomeScreenNavigationProp>();
-    const [data, setData] = useState<any>();
+    const [data, setData] = useState<IData[]>([]);
     const [countData, setCountData] = useState<number>(0);
     let userAuth = auth().currentUser;
 
@@ -32,13 +30,13 @@ const KeychainScreen = ({ route, navigation }: NativeStackNavigationProp<HomeSta
         console.log('KeychainScreen: Récupération de la collection des users');
 
         // Récupération des datas en DB
-        let items: TData[] = [];
+        let items: IData[] = [];
         querySnapshot.forEach((snapshot: any) => {
             console.log("KeychainScreen: ID=" + snapshot.id);
             let id = { 'id:': snapshot.id }
             let item = snapshot.data();
             item.id = snapshot.id;
-            items.push(item);
+            items.push(item as IData);
         });
 
         console.log("KeychainScreen: onResult()");
@@ -74,89 +72,26 @@ const KeychainScreen = ({ route, navigation }: NativeStackNavigationProp<HomeSta
         auth()
             .signOut()
             .then(() => {
-                console.log('KeychainScreen: Utilisateur délogué !');
-
                 // On renseigne la page parente que le user est déconnecté => FALSE
                 route.params.parentCallback(false);
             });
     }
 
     const addItem = (): void => {
-        console.log("add ");
-
         navigation.navigate("AddKeychain");
     }
 
     const updateItem = (itemId: string): void => {
-        console.log("KeychainScreen: update " + itemId);
-
         navigation.navigate("UpdateKeychain", {
             itemId: itemId
         });
     }
-
-    const deleteItem = (id: string): void => {
-        console.log("KeychainScreen: delete " + id);
-
-        firestore()
-            .collection('Users')
-            .doc(userAuth?.uid)
-            .collection('Trousseau')
-            .doc(id)
-            .delete()
-            .then(() => {
-                console.log("user " + id + " deleted");
-            });
-    }
-
-    const ItemSeparator = () => <View style={{
-        height: 1,
-        width: "100%",
-        backgroundColor: "rgba(0,0,0,0.1)",
-    }} />
-
-    const [selectedId, setSelectedId] = useState(null);
-    const [eyeToggle, setEyeToggle] = useState<{id:string; value:boolean}[]>([]);
-    const renderItem = ({ item, index }: any) => {
-        const backgroundColor = (item.id === selectedId) ? "yellow" : "orange";
-        /*
-        setEyeToggle(prevState => {
-            const { favorites } = prevState;
-            const isFavorite = favorites.includes(item.id);
-            return {
-                favorites: isFavorite
-                    ? favorites.filter(title => title !== item)
-                    : [item, ...favorites],
-            };
-        })
-        */
-       /*
-        setEyeToggle(prevEye => [
-            ...prevEye,
-            {id: item.id, value: false}
-        ]);
-*/
-        return (
-            <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity onPress={() => updateItem(item.id)} style={[styles.row, { flex: 12, }]}>
-                    <Text style={[styles.textItem, styles.textLine1]}>{item.name}</Text>
-                    <Text style={[styles.textItem, styles.textLine2]}>{item.email}</Text>
-                    <Text style={[styles.textItem, styles.textLine3]}>{eyeToggle ? item.password : '**'}</Text>
-                    {/* <Text style={[styles.textItem, { width: '20%' }]}>{item.type === 'a' ? 'Web' : 'Mobile'}</Text> */}
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setEyeToggle(!eyeToggle)} style={[styles.row, { flex: 1, justifyContent: 'flex-end', paddingTop: 7 }]}>
-                    <Icon name="eye-outline" size={27} color="tomato" />
-                </TouchableOpacity>
-            </View>
-        );
-    };
 
     return (
         <View style={styles.container}>
 
             <View style={styles.header}>
                 <Text style={styles.count}>{countData} compte{countData > 1 && 's'}</Text>
-                {/* <Button icon="trash-can-outline" color="black" onPress={addItem} /> */}
                 <Pressable onPress={addItem} style={[{ alignSelf: 'flex-end' }]}>
                     <View style={styles.buttonSmall}>
                         <Icon name="plus" size={28} color="white" />
@@ -164,14 +99,11 @@ const KeychainScreen = ({ route, navigation }: NativeStackNavigationProp<HomeSta
                 </Pressable>
             </View>
 
-            <FlatList
-                data={data}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-                extraData={selectedId}
-                ItemSeparatorComponent={ItemSeparator}
-            />
-
+            {
+                // data.map( (item: IData) => <DataList {...item} /> )
+                data.map( (item: IData) => <DataList data={item} upload={(titi:string)=>updateItem(titi)}/> )
+            }
+  
             <View style={{ alignItems: 'center', marginTop: 20 }}>
                 <Pressable onPress={logout} style={styles.pressable}>
                     <View style={styles.button}>
@@ -191,7 +123,7 @@ const styles = StyleSheet.create({
         width: '100%',
         padding: 20,
         backgroundColor: '#efefef',
-        justifyContent: 'space-around',
+        //justifyContent: 'space-around',
     },
     header: {
         flexDirection: 'row',
