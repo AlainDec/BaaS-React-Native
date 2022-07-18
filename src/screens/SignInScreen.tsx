@@ -10,7 +10,7 @@ import auth from '@react-native-firebase/auth';
 // autologin
 import { MMKVLoader, useMMKVStorage } from "react-native-mmkv-storage";
 
-type HomeScreenNavigationProp = NativeStackScreenProps<HomeStackScreenParamList>
+type HomeScreenNavigationProp = NativeStackScreenProps<HomeStackScreenParamList, 'Identification'>
 
 const MMKV = new MMKVLoader().initialize();
 

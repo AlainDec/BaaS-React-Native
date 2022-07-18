@@ -169,40 +169,9 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: 'bold',
     },
-    textSmall: {
-        textAlign: 'center',
-        textTransform: 'uppercase',
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 12,
-    },
-    title: {
-        fontSize: 14,
-    },
-    textItem: {
-        color: 'black',
-        fontSize: 14,
-        paddingRight: 0,
-        paddingVertical: 8,
-    },
-    textLine1: {
-        flex: 1,
-        backgroundColor: '#eaeaea',
-    },
-    textLine2: {
-        flex: 1.5,
-        backgroundColor: '#f5f5f5',
-    },
-    textLine3: {
-        flex: 1.5,
-        backgroundColor: '#fffcfc',
-    },
     count: {
         color: 'black',
         fontWeight: 'bold',
         fontSize: 22,
     },
-    row: {
-        flexDirection: 'row',
-    }
 });

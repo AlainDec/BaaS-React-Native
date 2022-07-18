@@ -37,7 +37,7 @@ export const AddUpdateKeychainForm = (props: IForm) => {
 
     const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
 
-    const [ errorOutOfForm, setErrorOutOfForm ] = useState<string>('');
+    const [errorOutOfForm, setErrorOutOfForm] = useState<string>('');
     const { formType, itemId } = props;
     console.log("OPERATION: " + formType + " - ITEMID (ligne concernée): " + itemId);
 
@@ -140,7 +140,7 @@ export const AddUpdateKeychainForm = (props: IForm) => {
             .then(() => {
                 console.log("line " + itemId + " deleted");
             });
-        
+
         navigation.goBack();
     }
 
@@ -185,10 +185,11 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                     break;
                 default:
             }
-            // TODO ajouter les .then et 3.error
+            // TODO ajouter les .then et .error
         }
 
-        // navigation.navigate('Identification');
+        // Pas besoin de refresh la page parente car Firebase est en écoute de la DB
+        // Les nouvelles données seront rafraîchies.
         navigation.goBack();
     }
 
@@ -282,12 +283,12 @@ export const AddUpdateKeychainForm = (props: IForm) => {
 
             <View style={{ alignItems: 'center', marginTop: 20, flexDirection: 'row', justifyContent: 'space-around' }}>
                 {
-                    formType === 'update' && 
-                        <Pressable onPress={deleteItem}>
-                            <View style={[styles.buttonSmall, styles.alert]}>
-                                <Icon name="close-thick" size={28} color="white" />
-                            </View>
-                        </Pressable>
+                    formType === 'update' &&
+                    <Pressable onPress={deleteItem}>
+                        <View style={[styles.buttonSmall, styles.alert]}>
+                            <Icon name="close-thick" size={28} color="white" />
+                        </View>
+                    </Pressable>
 
                 }
                 <Pressable onPress={handleSubmit(onSubmit)} style={styles.pressable}>

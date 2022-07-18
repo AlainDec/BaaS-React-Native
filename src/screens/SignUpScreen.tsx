@@ -8,7 +8,7 @@ import { SignForm } from '../components/SignForm';
 // Firebase
 import auth from '@react-native-firebase/auth';
 
-type HomeScreenNavigationProp = NativeStackScreenProps<HomeStackScreenParamList>
+type HomeScreenNavigationProp = NativeStackScreenProps<HomeStackScreenParamList, 'Inscription'>
 
 // -------- INSCRIPTION -------------
 const SignUpScreen = ({ route, navigation }: HomeScreenNavigationProp) => {

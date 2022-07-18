@@ -1,12 +1,13 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { AddUpdateKeychainForm } from '../components/AddUpdateKeychainForm';
+import { HomeStackScreenParamList } from '../navigation/HomeStack';
 
-type propsRoute = {
-    itemId: string;
-}
+type UpdateKeyScreenNavigationProp = NativeStackScreenProps<HomeStackScreenParamList, 'UpdateKeychain'>
 
-const UpdateKeychainScreen = ({ route }: propsRoute) => {
+
+const UpdateKeychainScreen = ({ route }: UpdateKeyScreenNavigationProp) => {
 
     const { itemId } = route.params;
 

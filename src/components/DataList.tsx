@@ -73,11 +73,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#eaeaea',
     },
     textLine2: {
-        flex: 1.5,
+        flex: 1.3,
         backgroundColor: '#f5f5f5',
     },
     textLine3: {
-        flex: 1.5,
+        flex: 1.3,
         backgroundColor: '#fffcfc',
     },
     row: {
