@@ -1,8 +1,6 @@
 # 17-BaaS
 
-**Firebase**
-
-Application de gestion de mot de passe.  
+**Application de gestion de mot de passe avec Firebase**
 
 1 : Création projet React Native  
 
