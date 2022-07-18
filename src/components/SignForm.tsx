@@ -1,6 +1,5 @@
-import { Text, View, ScrollView, StyleSheet, Pressable, ActivityIndicator } from "react-native";
+import { Text, View, ScrollView, StyleSheet, Pressable } from "react-native";
 import * as React from 'react';
-import { useState, useEffect } from 'react';
 import { InputCustom } from './InputCustom';
 // Formulaire
 import { useForm, Controller } from "react-hook-form";
@@ -58,9 +57,6 @@ export const SignForm = (props: IForm) => {
         console.log('---data enfant----');
         console.log(data);
         callBackTheData(data);
-
-        // navigation.navigate('Identification');
-        //navigation.navigate('Dashboard');
     }
 
     return (

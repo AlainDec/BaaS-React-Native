@@ -1,4 +1,4 @@
-import { Text, View, ScrollView, StyleSheet, Pressable, ActivityIndicator } from "react-native";
+import { Text, View, ScrollView, StyleSheet, Pressable } from "react-native";
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import { InputCustom } from './InputCustom';
@@ -37,7 +37,7 @@ export const AddUpdateKeychainForm = (props: IForm) => {
 
     const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
 
-    const { errorOutOfForm, setErrorOutOfForm } = useState<string>('');
+    const [ errorOutOfForm, setErrorOutOfForm ] = useState<string>('');
     const { formType, itemId } = props;
     console.log("OPERATION: " + formType + " - ITEMID (ligne concernée): " + itemId);
 
@@ -343,12 +343,6 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 14,
-    },
-    text: {
-        textAlign: 'center',
-        textTransform: 'uppercase',
-        color: 'white',
-        fontWeight: 'bold',
     },
     txtError: {
         color: '#ac0000',

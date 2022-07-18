@@ -1,21 +1,18 @@
 import React, { useState } from 'react';
-import { Text, View, Button, Pressable, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 // Navigation
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { HomeStackScreenParamList } from "../navigation/HomeStack";
 // Forms
 import { SignForm } from '../components/SignForm';
 // Firebase
 import auth from '@react-native-firebase/auth';
 
-type HomeScreenNavigationProp = NativeStackNavigationProp<HomeStackScreenParamList>
+type HomeScreenNavigationProp = NativeStackScreenProps<HomeStackScreenParamList>
 
 // -------- INSCRIPTION -------------
-const SignUpScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackScreenParamList, 'Inscription'>) => {
-//const SignUpScreen = () => {
+const SignUpScreen = ({ route, navigation }: HomeScreenNavigationProp) => {
 
-    //const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
     const [data, setData] = useState(); // données saisie dans le formulaire
     const [error, setError] = useState<string>('');
 
@@ -28,7 +25,6 @@ const SignUpScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackScr
             .createUserWithEmailAndPassword(childData.email, childData.password)
             .then(() => {
                 console.log("SignUpScreen: Compte d'utilisateur créé et logué !");
-                //navigation.navigate('Dashboard');
                 // On renseigne la page parente que le user est loggué => TRUE
                 route.params.parentCallback(true);
             })

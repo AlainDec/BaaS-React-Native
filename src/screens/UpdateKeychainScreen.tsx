@@ -2,7 +2,11 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { AddUpdateKeychainForm } from '../components/AddUpdateKeychainForm';
 
-const UpdateKeychainScreen = ({ route }) => {
+type propsRoute = {
+    itemId: string;
+}
+
+const UpdateKeychainScreen = ({ route }: propsRoute) => {
 
     const { itemId } = route.params;
 

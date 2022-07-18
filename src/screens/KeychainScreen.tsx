@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Pressable, TouchableOpacity, FlatList } from 'react-native';
-//import { Button } from 'react-native-paper';
+import { Text, View, StyleSheet, Pressable } from 'react-native';
 // Navigation
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { HomeStackScreenParamList } from "../navigation/HomeStack";
 // Firebase
 import firestore from '@react-native-firebase/firestore';
@@ -14,17 +12,22 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { IData } from '../Interfaces';
 // Components
 import DataList from '../components/DataList';
+// autologin
+import { MMKVLoader, useMMKVStorage } from "react-native-mmkv-storage";
 
-type HomeScreenNavigationProp = NativeStackNavigationProp<HomeStackScreenParamList>
+type HomeScreenNavigationProp = NativeStackScreenProps<HomeStackScreenParamList, 'Identification'>
 
+const MMKV = new MMKVLoader().initialize();
 
+const KeychainScreen = ({ route, navigation }: HomeScreenNavigationProp) => {
 
-const KeychainScreen = ({ route, navigation }: NativeStackNavigationProp<HomeStackScreenParamList, 'Identification'>) => {
-
-    //const navigation = useNavigation<HomeScreenNavigationProp>();
     const [data, setData] = useState<IData[]>([]);
     const [countData, setCountData] = useState<number>(0);
     let userAuth = auth().currentUser;
+
+    // Identifiants stockés dans le localStorage
+    const [userEmail, setUserEmail] = useMMKVStorage<string | undefined>("userEmail", MMKV);
+    const [userPassword, setUserPassword] = useMMKVStorage<string | undefined>("userPassword", MMKV);
 
     function onResult(querySnapshot: any) {
         console.log('KeychainScreen: Récupération de la collection des users');
@@ -72,8 +75,17 @@ const KeychainScreen = ({ route, navigation }: NativeStackNavigationProp<HomeSta
         auth()
             .signOut()
             .then(() => {
+                // On se delogue
+                console.log("userEmail (avant delogue) = " + userEmail);
+                // Suppression des identifiants dans le localStorage
+                setUserEmail('');
+                setUserPassword('');
+
                 // On renseigne la page parente que le user est déconnecté => FALSE
                 route.params.parentCallback(false);
+            })
+            .finally(() => {
+                console.log("userEmail (après delogue) = " + userEmail);
             });
     }
 
@@ -101,7 +113,7 @@ const KeychainScreen = ({ route, navigation }: NativeStackNavigationProp<HomeSta
 
             {
                 // data.map( (item: IData) => <DataList {...item} /> )
-                data.map( (item: IData) => <DataList data={item} upload={(titi:string)=>updateItem(titi)}/> )
+                data.map( (item: IData) => <DataList data={item} upload={(titi:string)=>updateItem(titi)} key={item.id}/> )
             }
   
             <View style={{ alignItems: 'center', marginTop: 20 }}>

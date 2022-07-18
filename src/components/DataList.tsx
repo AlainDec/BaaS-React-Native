@@ -34,21 +34,18 @@ const DataList = ({ data, upload }: { data: IData, upload: (id: string) => void 
     const [eyeToggle, setEyeToggle] = useState(false);
 
     return (
-        <>
-            <View style={styles.container} key={data.id}>
-                <TouchableOpacity onPress={() => upload(data.id)} style={[styles.row, styles.textLineGlobal]}>
-                    <Text style={[styles.textItem, styles.textLine1]}>{data.name}</Text>
-                    <Text style={[styles.textItem, styles.textLine2]}>{data.email}</Text>
-                    <Text style={[styles.textItem, styles.textLine3]}>{eyeToggle ? data.password : '*'.padStart(data.password.length, '*')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => setEyeToggle(!eyeToggle)}
-                    style={[styles.row, styles.eyeContainer]}>
-                    <Icon name={eyeToggle ? 'eye-off-outline' : 'eye-outline'} size={27} color="tomato" />
-                </TouchableOpacity>
-            </View>
-            <ItemSeparator />
-        </>
+        <View style={styles.container}>
+            <TouchableOpacity onPress={() => upload(data.id)} style={[styles.row, styles.textLineGlobal]}>
+                <Text style={[styles.textItem, styles.textLine1]}>{data.name}</Text>
+                <Text style={[styles.textItem, styles.textLine2]}>{data.email}</Text>
+                <Text style={[styles.textItem, styles.textLine3]}>{eyeToggle ? data.password : '*'.padStart(data.password.length, '*')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => setEyeToggle(!eyeToggle)}
+                style={[styles.row, styles.eyeContainer]}>
+                <Icon name={eyeToggle ? 'eye-off-outline' : 'eye-outline'} size={27} color="tomato" />
+            </TouchableOpacity>
+        </View>
     );
 }
 
@@ -57,7 +54,10 @@ export default DataList;
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+        borderBottom: 1,
+        borderBottomWidth: 1,
+        borderBottomColor: "rgba(0,0,0,0.1)"
     },
     textItem: {
         color: 'black',

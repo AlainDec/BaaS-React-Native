@@ -1,26 +1,29 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { Text, View, Pressable, StyleSheet } from 'react-native';
 // Navigation
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { HomeStackScreenParamList } from "../navigation/HomeStack";
 // Forms
 import { SignForm } from '../components/SignForm';
 // Firebase
 import auth from '@react-native-firebase/auth';
+// autologin
+import { MMKVLoader, useMMKVStorage } from "react-native-mmkv-storage";
 
-type HomeScreenNavigationProp = NativeStackNavigationProp<HomeStackScreenParamList>
+type HomeScreenNavigationProp = NativeStackScreenProps<HomeStackScreenParamList>
+
+const MMKV = new MMKVLoader().initialize();
 
 // -------- IDENTIFICATION -------------
-const SignInScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackScreenParamList, 'Identification'>) => {
+const SignInScreen = ({ route, navigation }: HomeScreenNavigationProp) => {
 
-    // ENVOYE : itemId: "coucou"
-    // LECTURE ICI : console.log("PARAMS : ------------ " + route.params.itemId);
+    // Identifiants stockés dans le localStorage
+    const [userEmail, setUserEmail] = useMMKVStorage<string | undefined>("userEmail", MMKV);
+    const [userPassword, setUserPassword] = useMMKVStorage<string | undefined>("userPassword", MMKV);
+
     console.log("------------------------------------------------------------------- SignInScreen");
     console.log("SignInScreen: route.params.parentCallback = " + route.params.parentCallback);
 
-    //const navigation = useNavigation<HomeScreenNavigationProp>();
-    //const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
     const [data, setData] = useState(); // données saisie dans le formulaire
     const [error, setError] = useState<string>('');
 
@@ -33,6 +36,10 @@ const SignInScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackScr
             .signInWithEmailAndPassword(childData.email, childData.password)
             .then(() => {
                 console.log('SignInScreen: Utilisateur logué !');
+
+                // Stockage des identifiants dans le localStorage
+                setUserEmail(childData.email);
+                setUserPassword(childData.password);
 
                 // On renseigne la page parente que le user est connecté => TRUE
                 route.params.parentCallback(true);
@@ -49,7 +56,7 @@ const SignInScreen = ({route, navigation}:NativeStackNavigationProp<HomeStackScr
                         setError("Nous avons bloqué toutes les demandes provenant de cet appareil en raison d'une activité inhabituelle. Essayez à nouveau plus tard. [L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Vous pouvez le rétablir immédiatement en réinitialisant votre mot de passe ou vous pouvez réessayer plus tard. ]]");
                         break;
                     default:
-
+                        setError(error.message);
                 }
                 console.log(error);
             });
