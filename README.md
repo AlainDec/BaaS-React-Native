@@ -35,11 +35,11 @@ A la déconnexion, supprimer ses identifiants de connexion.
 
 -------
 
-![Screenshot_20220718-144145_p17BaaS](https://user-images.githubusercontent.com/35977024/179517405-d2c13e6c-0b60-4bb3-8fa5-699534ecff17.jpg)
-![Screenshot_20220718-143625_p17BaaS](https://user-images.githubusercontent.com/35977024/179517407-c9d4c88b-e3d1-4505-88af-6cf7ec1c9f56.jpg)
-![Screenshot_20220718-143457_p17BaaS](https://user-images.githubusercontent.com/35977024/179517412-890c7164-7148-4898-95c8-e56b8ba8a03d.jpg)
 ![Screenshot_20220718-143437_p17BaaS](https://user-images.githubusercontent.com/35977024/179517415-1b436a3e-ae6c-453c-b957-3b0462f92d3a.jpg)
+![Screenshot_20220718-143457_p17BaaS](https://user-images.githubusercontent.com/35977024/179517412-890c7164-7148-4898-95c8-e56b8ba8a03d.jpg)
 ![Screenshot_20220718-143858_p17BaaS](https://user-images.githubusercontent.com/35977024/179517416-21e37522-be72-452f-abfb-557d850c66f6.jpg)
+![Screenshot_20220718-143625_p17BaaS](https://user-images.githubusercontent.com/35977024/179517407-c9d4c88b-e3d1-4505-88af-6cf7ec1c9f56.jpg)
+![Screenshot_20220718-144145_p17BaaS](https://user-images.githubusercontent.com/35977024/179517405-d2c13e6c-0b60-4bb3-8fa5-699534ecff17.jpg)
 
 
 Avec la nouvelle version de React 18, react Native a des soucis avec React Navigation. Il faut donc créer le projet avec cette ligne de commande :  
