@@ -67,9 +67,9 @@ $ npm install @hookform/resolvers
 
 Doc d'inspiration : https://blog.logrocket.com/email-authentication-react-native-react-navigation-firebase/  
 
-exo 4 : créer la DB : https://console.firebase.google.com/project/lamanubaas/firestore  
+4/ : créer la DB : https://console.firebase.google.com/project/lamanubaas/firestore  
 $ npm install @react-native-firebase/app  
 $ npm install @react-native-firebase/firestore  
 
-exo 6 : installer la lib :  
+6/ : installer la lib :  
 $ npm install react-native-mmkv-storage  
