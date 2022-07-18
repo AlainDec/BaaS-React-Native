@@ -2,36 +2,29 @@
 
 **Firebase**
 
-Le but de ces exercices est de créer une application de gestion de mot de passe.  
+Application de gestion de mot de passe.  
 
-Exercice 1 :  
-Créer un nouveau projet react native  
+1 : Création projet React Native  
 
-Exercice 2 :  
-S’inscrire sur https://firebase.google.com/ , puis créer un projet. Activer l’authentification par mail et mot de passe.  
+2 : Inscription sur https://firebase.google.com/ , puis créer un projet. Activer l’authentification par mail et mot de passe.  
 
-Exercice 3 :  
-Dans l’application mobile, faire deux formulaires dans deux écrans séparés :
+3 : Dans l’app mobile, faire deux formulaires dans deux écrans séparés :
 • La page d’inscription. Elle permet de s’inscrire sur l’application. Les données devront être stockées dans la partie Authentification de Firebase.
-• La page connexion. Elle permet de se connecter à l’application. La vérification devra se faire via Firebase. Si la connexion réussi rediriger vers une troisième pas qui affichera 
-« Bonjour adresseMail ».  
-Pour utiliser firebase dans une application Reactnative utiliser https://rnfirebase.io/  
+• La page connexion. Elle permet de se connecter à l’application. La vérification devra se faire via Firebase. Si la connexion réussie, rediriger vers une troisième page qui affichera les données.  
+Infos d'utiliation de Firebase dans une app React Native : https://rnfirebase.io/  
 
-Exercice 4 :  
-Avec Firestore Database, enregistrer un premier mot de passe avec les informations suivantes :
+4 : Avec Firestore Database, enregistrer un mot de passe avec les informations suivantes :
 • Login : string (identifiant)
 • Password : string (mot de passe)
 • Name : string (nom du site ou de l’application)
 • Type : String (Appli mobile ou site web)
-Ceci est la structure minimale. Elle peut être améliorer si besoin.  
+Structure minimale qui peut être améliorée...  
 
-Exercice 5 :  
-Faire les différents écrans permettant d’afficher, de créer, de modifier et de supprimer les mots de passe enregistrés.  
-Pour l’affichage, les mots de passes devront être caché par défaut.  
+5 : Création des différents écrans permettant d’afficher, créer, modifier et supprimer les mots de passe enregistrés.  
+Pour l’affichage, les mots de passes sont cachés par défaut.  
 
-Exercice 6 :  
-En utilisant https://rnmmkv.vercel.app/#/ , faire en sorte que quand un utilisateur se connecte, cela enregistre ses identifiants de connexion pour qu’il puisse se loguer automatiquement les prochaines fois.  
-A la déconnexion, supprimer ses identifiants de connexion.  
+6 : En utilisant https://rnmmkv.vercel.app/#/ , faire en sorte que quand un utilisateur se connecte, cela enregistre ses identifiants de connexion pour qu’il puisse se loguer automatiquement les prochaines fois.  
+A la déconnexion, suppression de ses identifiants de connexion.  
 
 -------
 
