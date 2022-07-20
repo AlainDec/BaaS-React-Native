@@ -81,3 +81,8 @@ $ npm i react-native-biometrics
 
 8/ : Gestion de la galerie photo  
 $ npm i react-native-image-picker  
+
+Ajouter dans le fichier android/app/src/debug/AndroidManifest.xml :  
+<uses-permission android:name="android.permission.CAMERA"/>  
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>  
+
