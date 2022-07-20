@@ -2,7 +2,6 @@ import React from 'react';
 import { SafeAreaView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import HomeStack from './src/navigation/HomeStack';
-// React native paper
 import { Provider as PaperProvider } from 'react-native-paper';
 
 const App = () => {

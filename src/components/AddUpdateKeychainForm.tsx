@@ -33,13 +33,10 @@ interface IForm {
 
 export const AddUpdateKeychainForm = (props: IForm) => {
 
-    console.log("------------------------------------------------------------------------------- AddUpdateKeychainForm");
-
     const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
 
     const [errorOutOfForm, setErrorOutOfForm] = useState<string>('');
     const { formType, itemId } = props;
-    console.log("OPERATION: " + formType + " - ITEMID (ligne concernée): " + itemId);
 
     let userAuth = auth().currentUser;
 
@@ -82,8 +79,6 @@ export const AddUpdateKeychainForm = (props: IForm) => {
             userAuth &&
             (itemId !== '' || itemId !== undefined)) {
 
-            console.log("AddUpdateKeychainForm: utilisateur = " + userAuth?.uid);
-
             // Listener sur les modifications de la requête. Il surveille la collection "Trousseau"
             // lorsque les documents sont modifiés (suppression, ajout, modification)
             // Donc si j'ajoute un champ dans Firebase, en web, l'app mobile affichera en temps réel
@@ -98,10 +93,9 @@ export const AddUpdateKeychainForm = (props: IForm) => {
                     .doc(itemId);
 
                 try {
+                    // Récupération des datas
                     var doc = await docRef.get()
                     if (doc.exists) {
-                        console.log('Data récupérées: ');
-                        console.log(doc.data());
                         // Il faut ajouter un 'as FormValues' afin que les données lues en DB soient au même format que mes données.
                         // Sinon, l'erreur suivante sera retournée :
                         //   L'argument de type 'DocumentData' n'est pas attribuable au paramètre de type 'SetStateAction<FormValues>'.
@@ -128,8 +122,8 @@ export const AddUpdateKeychainForm = (props: IForm) => {
         }
     }, [reset]);
 
+    // Suppression d'une keychain
     const deleteItem = (): void => {
-        console.log("KeychainScreen: delete " + itemId);
 
         firestore()
             .collection('Users')
@@ -147,8 +141,6 @@ export const AddUpdateKeychainForm = (props: IForm) => {
     const onSubmit: any = (data: FormValues) => {
 
         if (userAuth && data !== undefined) {
-            console.log('---data enfant----');
-            console.log(data);
 
             // Ajout/update des data en DB
             switch (formType) {

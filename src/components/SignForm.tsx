@@ -1,5 +1,6 @@
 import { Text, View, ScrollView, StyleSheet, Pressable } from "react-native";
 import * as React from 'react';
+import { useState } from 'react';
 import { InputCustom } from './InputCustom';
 // Formulaire
 import { useForm, Controller } from "react-hook-form";
@@ -9,13 +10,19 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { HomeStackScreenParamList } from "../navigation/HomeStack";
-
+// Icônes
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// autologin
+import { MMKVLoader, useMMKVStorage } from "react-native-mmkv-storage";
+// Biometry
+import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics'
 
 // ------- Formulaire
 type FormValues = {
     email: string;
     password: string;
     operation: 'sign-in' | 'sign-up';
+    biometrics: boolean;
 }
 interface IForm {
     formType: 'sign-in' | 'sign-up';
@@ -23,12 +30,37 @@ interface IForm {
     error?: string;
 }
 
+const MMKVwithEncryption = new MMKVLoader().withEncryption().initialize(); // LocalStorage
+const rnBiometrics = new ReactNativeBiometrics();
 
 export const SignForm = (props: IForm) => {
 
-    const {formType, callBackTheData, error} = props;
+    const { formType, callBackTheData, error } = props;
+    const [isBiometry, setIsBiometry] = useState<boolean>(false);
+    // Identifiants stockés dans le localStorage
+    const [userEmail, setUserEmail] = useMMKVStorage<string | undefined>("userEmail", MMKVwithEncryption);
+    const [userPassword, setUserPassword] = useMMKVStorage<string | undefined>("userPassword", MMKVwithEncryption);
 
     const navigation = useNavigation<NativeStackNavigationProp<HomeStackScreenParamList>>();
+
+    // DETECTION BIOMETRIQUE ----------------------------------------------------
+    rnBiometrics.isSensorAvailable()
+        .then((resultObject) => {
+            const { available, biometryType } = resultObject
+
+            if (available && biometryType === BiometryTypes.TouchID) {
+                console.log('TouchID is supported (iOS)')
+            }
+            if (available && biometryType === BiometryTypes.FaceID) {
+                console.log('FaceID is supported (iOS)')
+            }
+            if (available && biometryType === BiometryTypes.Biometrics) {
+                console.log('Biometrics is supported')
+                setIsBiometry(true);
+            } else {
+                console.log('Biometrics not supported')
+            }
+        })
 
     // REACT HOOK FORM ----------------------------------------------------
     const validationSchema = Yup.object({
@@ -38,25 +70,30 @@ export const SignForm = (props: IForm) => {
             "Doit contenir 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial"
         ).required('Veuillez saisir votre mot de passe'),
     });
-
-    // React Hook Form
     // useForm prends en paramètre un résolver (nécessite librairie)
-    // - control permet de wraper les champs avec React Tool Form
-    // - handleSubmit pour submit le form
-    // - formState pour savoir où en est le state et récupérer les erreurs
-    // formValue pour que le useForm connaisse bien les types des champs
+    // - control : permet de wraper les champs avec React Tool Form
+    // - handleSubmit : pour submit le form
+    // - formState : pour savoir où en est le state et récupérer les erreurs
+    // formValue : pour que le useForm reconnaisse les types des champs
     const { control, handleSubmit, formState: { errors } } = useForm<FormValues>({
         mode: 'onBlur',
         resolver: yupResolver(validationSchema),
+        shouldUnregister: false,
         defaultValues: {
-            operation: formType
-        } // utile pour simuler un champ hidden qui précise si je fais un email ou création de email
+            operation: formType,
+            biometrics: false,
+        } // simule un champ hidden dans lequel je passe des données
     })
 
     const onSubmit: any = (data: FormValues) => {
-        console.log('---data enfant----');
-        console.log(data);
+        // Envoi des données en page parente qui gère les formulaires
         callBackTheData(data);
+    }
+
+    const onSubmitBiometrics = () => {
+        // Envoi des données en page parente qui gère les formulaires
+        // Reconstruction des données
+        callBackTheData({"email": "", "operation": "sign-in", "password": "", "biometrics" : true} as FormValues);
     }
 
     return (
@@ -101,16 +138,26 @@ export const SignForm = (props: IForm) => {
                 name="password"
             />
 
-            { error !== '' && <Text style={styles.textError}>{error}</Text> }
+            {error !== '' && <Text style={styles.textError}>{error}</Text>}
 
-            <View style={{ alignItems: 'center', marginTop: 20 }}>
-                <Pressable onPress={handleSubmit(onSubmit)} style={styles.pressable}>
+            <View style={styles.containerButtons}>
+                {/* Submit du formulaire */}
+                <Pressable onPress={handleSubmit(onSubmit)}>
                     <View style={styles.button}>
                         <Text style={styles.text}>{formType === 'sign-in' ? 'Connection' : 'Créer mon compte'}</Text>
                     </View>
                 </Pressable>
+                {/* Bypass le formulaire.  On affiche le bouton de biometrie s'il est activé sur le mobile et s'il
+                    y a déjà eu une première connexion avec les identifiants stockés dans le localstorage */}
+                {
+                    isBiometry && userEmail && userPassword && formType === 'sign-in' && 
+                        <Pressable onPress={onSubmitBiometrics}>
+                            <View style={styles.icon}>
+                                <Icon name="fingerprint" size={44} color="white" />
+                            </View>
+                        </Pressable>
+                }
             </View>
-
         </ScrollView>
     );
 }
@@ -120,12 +167,25 @@ const styles = StyleSheet.create({
         flex: 1,
         margin: 20,
     },
-    pressable: {
-        width: '60%',
+    containerButtons: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        marginTop: 20,
     },
     button: {
         marginVertical: 10,
+        paddingHorizontal: 25,
         padding: 15,
+        backgroundColor: 'tomato',
+        borderColor: 'white',
+        borderWidth: 1,
+        borderRadius: 30,
+    },
+    icon: {
+        marginVertical: 10,
+        paddingHorizontal: 15,
+        padding: 6,
         backgroundColor: 'tomato',
         borderColor: 'white',
         borderWidth: 1,
@@ -136,14 +196,6 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         color: 'white',
         fontWeight: 'bold',
-    },
-    txtError: {
-        color: '#ac0000',
-    },
-    loadingContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
     },
     textError: {
         color: 'red',

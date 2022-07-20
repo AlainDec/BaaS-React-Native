@@ -10,29 +10,27 @@ import auth from '@react-native-firebase/auth';
 
 type HomeScreenNavigationProp = NativeStackScreenProps<HomeStackScreenParamList, 'Inscription'>
 
+
 // -------- INSCRIPTION -------------
+// Appelle un formulaire générique pour l'identification et l'inscription
 const SignUpScreen = ({ route, navigation }: HomeScreenNavigationProp) => {
 
     const [data, setData] = useState(); // données saisie dans le formulaire
     const [error, setError] = useState<string>('');
 
     const callbackData = (childData: any) => {
-        console.log('SignUpScreen: ------callBackForm parent-------');
         setData(childData);
-        console.log(childData);
 
         auth()
             .createUserWithEmailAndPassword(childData.email, childData.password)
             .then(() => {
-                console.log("SignUpScreen: Compte d'utilisateur créé et logué !");
                 // On renseigne la page parente que le user est loggué => TRUE
                 route.params.parentCallback(true);
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {
                     setError("Cette adresse e-mail est déjà utilisée !");
-                }
-                if (error.code === 'auth/invalid-email') {
+                } else if (error.code === 'auth/invalid-email') {
                     setError("Cette adresse e-mail n'est pas valide !");
                 }
                 console.log(error);
@@ -56,35 +54,4 @@ const styles = StyleSheet.create({
         backgroundColor: '#efefef',
         justifyContent: 'space-around',
     },
-    containerFields: {
-        justifyContent: 'space-between',
-    },
-    containerField: {
-        alignItems: 'flex-start',
-    },
-    containerFooterText: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-    },
-    field: {
-        maxWidth: 500,
-        marginVertical: 20,
-        borderColor: 'lightblue',
-    },
-    containerButtons: {
-        paddingVertical: 50,
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    text: {
-        alignItems: 'center',
-        justifyContent: 'space-around',
-    },
-    textLink: {
-        marginLeft: 10,
-        color: 'blue',
-    },
-    textError: {
-        color: 'red',
-    }
 });

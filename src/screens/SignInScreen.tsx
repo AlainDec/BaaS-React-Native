@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View, Pressable, StyleSheet } from 'react-native';
 // Navigation
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -9,57 +9,108 @@ import { SignForm } from '../components/SignForm';
 import auth from '@react-native-firebase/auth';
 // autologin
 import { MMKVLoader, useMMKVStorage } from "react-native-mmkv-storage";
+// Biometry
+import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics'
 
 type HomeScreenNavigationProp = NativeStackScreenProps<HomeStackScreenParamList, 'Identification'>
 
-const MMKV = new MMKVLoader().initialize();
+const rnBiometrics = new ReactNativeBiometrics();
+const MMKVwithEncryption = new MMKVLoader().withEncryption().initialize(); // LocalStorage
+
 
 // -------- IDENTIFICATION -------------
+// Appelle un formulaire générique pour l'identification et l'inscription
 const SignInScreen = ({ route, navigation }: HomeScreenNavigationProp) => {
 
-    // Identifiants stockés dans le localStorage
-    const [userEmail, setUserEmail] = useMMKVStorage<string | undefined>("userEmail", MMKV);
-    const [userPassword, setUserPassword] = useMMKVStorage<string | undefined>("userPassword", MMKV);
+    const [isBiometry, setIsBiometry] = useState<boolean>(false);
 
-    console.log("------------------------------------------------------------------- SignInScreen");
-    console.log("SignInScreen: route.params.parentCallback = " + route.params.parentCallback);
+    // Identifiants stockés dans le localStorage
+    const [userMustLogIn, setUserMustLogIn] = useMMKVStorage<boolean | undefined>("userMustLogIn", MMKVwithEncryption);
+    const [userEmail, setUserEmail] = useMMKVStorage<string | undefined>("userEmail", MMKVwithEncryption);
+    const [userPassword, setUserPassword] = useMMKVStorage<string | undefined>("userPassword", MMKVwithEncryption);
 
     const [data, setData] = useState(); // données saisie dans le formulaire
     const [error, setError] = useState<string>('');
 
     const callbackData = (childData: any) => {
-        console.log('SignInScreen: ------callBackForm parent-------');
         setData(childData);
-        console.log(childData);
 
-        auth()
-            .signInWithEmailAndPassword(childData.email, childData.password)
-            .then(() => {
-                console.log('SignInScreen: Utilisateur logué !');
+        if (childData.biometrics && userEmail !== undefined && userPassword !== undefined) {
+            // Login BIOMETRIQUE (fingerprint)
+            rnBiometrics
+                .biometricKeysExist()
+                .then(resultObject => {
+                    const { keysExist } = resultObject;
 
-                // Stockage des identifiants dans le localStorage
-                setUserEmail(childData.email);
-                setUserPassword(childData.password);
+                    if (keysExist) {
+                        rnBiometrics
+                            .createSignature({
+                                promptMessage: 'Sign in',
+                                payload: "payload",
+                            })
+                            .then(resultObject => {
+                                const { success, signature } = resultObject;
 
-                // On renseigne la page parente que le user est connecté => TRUE
-                route.params.parentCallback(true);
-            })
-            .catch(error => {
-                switch (error.code) {
-                    case 'auth/user-not-found':
-                        setError("Il n'y a pas d'utilisateur correspondant à cet identifiant.");
-                        break;
-                    case 'auth/wrong-password': 
-                        setError("Le mot de passe n'est pas valide ou l'utilisateur ne possède pas de mot de passe.");
-                        break;
-                    case 'auth/too-many-requests':
-                        setError("Nous avons bloqué toutes les demandes provenant de cet appareil en raison d'une activité inhabituelle. Essayez à nouveau plus tard. [L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Vous pouvez le rétablir immédiatement en réinitialisant votre mot de passe ou vous pouvez réessayer plus tard. ]]");
-                        break;
-                    default:
-                        setError(error.message);
-                }
-                console.log(error);
-            });
+                                if (success) {
+                                    console.log(signature);
+                                    // verifySignatureWithServer(signature, payload);
+                                    auth()
+                                        .signInWithEmailAndPassword(userEmail, userPassword)
+                                        .then(() => {
+                                            // user logué, en page d'accueil, n'apparaîtra plus la page de login
+                                            setUserMustLogIn(false);
+
+                                            route.params.parentCallback(true);
+                                        })
+                                        .catch(error => {
+                                            console.error(error);
+                                        });
+                                }
+                            })
+                            .catch(err => console.log(err));
+                    } else {
+                        rnBiometrics
+                            .createKeys()
+                            .then(resultObject => {
+                                const { publicKey } = resultObject;
+                                console.log(publicKey);
+                                // sendPublicKeyToServer(publicKey);
+                            })
+                            .catch(err => console.log(err));
+                    }
+                })
+                .catch(err => console.log(err));
+
+        } else {
+            // Login SANS la BIOMETRIQUE (fingerprint)
+            auth()
+                .signInWithEmailAndPassword(childData.email, childData.password)
+                .then(() => {
+                    // Stockage des identifiants dans le localStorage
+                    setUserEmail(childData.email);
+                    setUserPassword(childData.password);
+                    setUserMustLogIn(false);
+
+                    // On renseigne la page parente que le user est connecté => TRUE
+                    route.params.parentCallback(true);
+                })
+                .catch(error => {
+                    switch (error.code) {
+                        case 'auth/user-not-found':
+                            setError("Il n'y a pas d'utilisateur correspondant à cet identifiant.");
+                            break;
+                        case 'auth/wrong-password':
+                            setError("Le mot de passe n'est pas valide ou l'utilisateur ne possède pas de mot de passe.");
+                            break;
+                        case 'auth/too-many-requests':
+                            setError("Nous avons bloqué toutes les demandes provenant de cet appareil en raison d'une activité inhabituelle. Essayez à nouveau plus tard. [L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Vous pouvez le rétablir immédiatement en réinitialisant votre mot de passe ou vous pouvez réessayer plus tard. ]]");
+                            break;
+                        default:
+                            setError(error.message);
+                    }
+                    console.log(error);
+                });
+        }
     }
 
     return (
@@ -87,25 +138,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#efefef',
         justifyContent: 'space-around',
     },
-    containerFields: {
-        justifyContent: 'space-between',
-    },
-    containerField: {
-        alignItems: 'flex-start',
-    },
     containerFooterText: {
         flexDirection: 'row',
         justifyContent: 'center',
-    },
-    field: {
-        maxWidth: 500,
-        marginVertical: 20,
-        borderColor: 'lightblue',
-    },
-    containerButtons: {
-        paddingVertical: 50,
-        justifyContent: 'space-between',
-        alignItems: 'center',
     },
     text: {
         alignItems: 'center',
@@ -115,7 +150,4 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         color: 'blue',
     },
-    textError: {
-        color: 'red',
-    }
 });

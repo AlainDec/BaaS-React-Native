@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
-import { createNativeStackNavigator, NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import KeychainScreen from '../screens/KeychainScreen';
@@ -10,7 +10,7 @@ import UpdateKeychainScreen from '../screens/UpdateKeychainScreen';
 import auth from '@react-native-firebase/auth';
 // Ignorer les warning de la navigation pour les données non sérialisables
 import { LogBox } from 'react-native';
-// autologin
+// Autologin via localStorage
 import { MMKVLoader, useMMKVStorage } from "react-native-mmkv-storage";
 import Loading from '../components/Loading';
 
@@ -29,51 +29,41 @@ export type HomeStackScreenParamList = {
     Keychain: { parentCallback: (childData: boolean) => void };
     AddKeychain: undefined;
     UpdateKeychain: { itemId: string };
-    // loading
+    // Loading
     Loading: undefined;
 };
 
-const Stack = createNativeStackNavigator<HomeStackScreenParamList>();
-
-type HomeScreenNavigationProp = NativeStackNavigationProp<HomeStackScreenParamList>
-
-interface Props {
-    auth: boolean;
+enum STACKCHOICE { 
+    LOADING,
+    SIGN,
+    LOGGED
 }
 
-const MMKV = new MMKVLoader().initialize();
+const Stack = createNativeStackNavigator<HomeStackScreenParamList>();
+const MMKVwithEncryption = new MMKVLoader().withEncryption().initialize(); // LocalStorage
 
-//const HomeStack = ({auth}: Props): JSX.Element => {
 const HomeStack = (): JSX.Element => {
 
-    // const MMKVwithEncryption = new MMKVLoader()
-    //     .withEncryption()
-    //     .initialize();
-
-    //console.log("AUTH = " + auth);
-
-    // flag de connexion ou non
-    const [userLoggedIn, setUserLoggedIn] = useState<number>(0);
+    // Flag de connexion ou non, par défaut sur l'icône animée de loading
+    const [userLoggedIn, setUserLoggedIn] = useState<STACKCHOICE>(STACKCHOICE.LOADING);
 
     // Identifiants stockés dans le localStorage
-    const [userEmail, setUserEmail] = useMMKVStorage<string | undefined>("userEmail", MMKV);
-    const [userPassword, setUserPassword] = useMMKVStorage<string | undefined>("userPassword", MMKV);
-
-    console.log("** userEmail = " + userEmail + ", userPassword = " + userPassword);
+    const [userMustLogIn, setUserMustLogIn] = useMMKVStorage<boolean | undefined>("userMustLogIn", MMKVwithEncryption);
+    const [userEmail, setUserEmail] = useMMKVStorage<string | undefined>("userEmail", MMKVwithEncryption);
+    const [userPassword, setUserPassword] = useMMKVStorage<string | undefined>("userPassword", MMKVwithEncryption);
 
     useEffect(() => {
 
         let userAuth = auth().currentUser;
-        console.log("HomeStack: userAuth?.uid = " + userAuth?.uid);
 
         // Récupération des identifiants dans le localStorage s'ils existent, 
         // et alors connection en bdd pour renseigner auth.
-        if (userEmail && userPassword) {
+        if (userEmail && userPassword && userMustLogIn === false) {
             auth()
                 .signInWithEmailAndPassword(userEmail, userPassword)
                 .then(() => {
-                    console.log('HomeStack: Utilisateur autologué !');
-                    setUserLoggedIn(2);
+                    setUserLoggedIn(STACKCHOICE.LOGGED);
+                    setUserMustLogIn(false);
                 })
                 .catch(error => {
                     switch (error.code) {
@@ -91,33 +81,32 @@ const HomeStack = (): JSX.Element => {
                     }
                     console.log(error);
 
-                    setUserLoggedIn(1);
+                    setUserLoggedIn(STACKCHOICE.SIGN);
                     setUserEmail('');
                     setUserPassword('');
+                    setUserMustLogIn(true);
                 });
         } else {
-            setUserLoggedIn(1);
+            setUserLoggedIn(STACKCHOICE.SIGN);
+            setUserMustLogIn(true);
         }
     }, [])
 
-
+    // Fonction passée en paramètres aux enfants afin de faire communiquer l'enfant au parent
     const handleCallback = (childData = false) => {
-        console.log("childData = " + childData);
-
-        setUserLoggedIn(childData ? 2 : 1);
+        setUserMustLogIn(!childData);
+        setUserLoggedIn(childData ? STACKCHOICE.LOGGED : STACKCHOICE.SIGN);
     }
-
-    console.log("HomeStack: userLoggedIn = " + userLoggedIn);
 
     return (
         <Stack.Navigator>
-            {userLoggedIn == 2 ? (
+            {userLoggedIn === STACKCHOICE.LOGGED && userMustLogIn === false ? (
                 <Stack.Group>
                     <Stack.Screen name="Keychain" component={KeychainScreen} initialParams={{ parentCallback: handleCallback }} />
                     <Stack.Screen name="AddKeychain" component={AddKeychainScreen} />
                     <Stack.Screen name="UpdateKeychain" component={UpdateKeychainScreen} />
                 </Stack.Group>
-            ) : userLoggedIn == 1 ? (
+            ) : userLoggedIn === STACKCHOICE.SIGN ? (
                 <Stack.Group>
                     <Stack.Screen name="Identification" component={SignInScreen} initialParams={{ parentCallback: handleCallback }} />
                     <Stack.Screen name="Inscription" component={SignUpScreen} initialParams={{ parentCallback: handleCallback }} />

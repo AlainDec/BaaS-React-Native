@@ -30,7 +30,7 @@ const ItemSeparator = () => <View style={{
 // const DataList = (props: IData) => {
 const DataList = ({ data, upload }: { data: IData, upload: (id: string) => void }) => {
 
-    // un state individuel pour chaque ligne
+    // Un state individuel du mot de passe pour chaque ligne
     const [eyeToggle, setEyeToggle] = useState(false);
 
     return (
