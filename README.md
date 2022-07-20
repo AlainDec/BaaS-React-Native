@@ -26,6 +26,8 @@ A la déconnexion, suppression de ses identifiants de connexion.
 
 7. Connexion avec la Biométrie  
 
+8. Transfère des photos depuis la galerie vers FireStore  
+
 -------
 
 ![Screenshot_20220718-143437_p17BaaS](https://user-images.githubusercontent.com/35977024/179517415-1b436a3e-ae6c-453c-b957-3b0462f92d3a.jpg)
@@ -74,5 +76,8 @@ $ npm install @react-native-firebase/firestore
 6/ : installer la lib :  
 $ npm install react-native-mmkv-storage  
 
-6/ : biométrie  
+7/ : biométrie  
 $ npm i react-native-biometrics  
+
+8/ : Gestion de la galerie photo  
+$ npm i react-native-image-picker  
