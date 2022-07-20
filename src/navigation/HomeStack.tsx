@@ -24,7 +24,7 @@ LogBox.ignoreLogs([
 export type HomeStackScreenParamList = {
     // Groupe de connection
     Identification: { parentCallback: (childData: boolean) => void };
-    Inscription: { parentCallback: (childData: boolean) => void };
+    Inscription: { parentCallback: (childData: boolean) => void } | undefined;
     // Groupe après connection
     Keychain: { parentCallback: (childData: boolean) => void };
     AddKeychain: undefined;
