@@ -1,8 +1,6 @@
 # 17-BaaS
 
-**Firebase**
-
-Application de gestion de mot de passe.  
+**Application de gestion de mot de passe avec Firebase**
 
 1 : Création projet React Native  
 
@@ -25,6 +23,8 @@ Pour l’affichage, les mots de passes sont cachés par défaut.
 
 6 : En utilisant https://rnmmkv.vercel.app/#/ , faire en sorte que quand un utilisateur se connecte, cela enregistre ses identifiants de connexion pour qu’il puisse se loguer automatiquement les prochaines fois.  
 A la déconnexion, suppression de ses identifiants de connexion.  
+
+7. Connexion avec la Biométrie  
 
 -------
 
@@ -73,3 +73,6 @@ $ npm install @react-native-firebase/firestore
 
 6/ : installer la lib :  
 $ npm install react-native-mmkv-storage  
+
+6/ : biométrie  
+$ npm i react-native-biometrics  
