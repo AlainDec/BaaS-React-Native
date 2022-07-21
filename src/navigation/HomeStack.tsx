@@ -6,6 +6,7 @@ import SignUpScreen from '../screens/SignUpScreen';
 import KeychainScreen from '../screens/KeychainScreen';
 import AddKeychainScreen from '../screens/AddKeychainScreen';
 import UpdateKeychainScreen from '../screens/UpdateKeychainScreen';
+import GaleryScreen from '../screens/GaleryScreen';
 // Firebase
 import auth from '@react-native-firebase/auth';
 // Ignorer les warning de la navigation pour les données non sérialisables
@@ -29,6 +30,7 @@ export type HomeStackScreenParamList = {
     Keychain: { parentCallback: (childData: boolean) => void };
     AddKeychain: undefined;
     UpdateKeychain: { itemId: string };
+    Galery: undefined;
     // Loading
     Loading: undefined;
 };
@@ -105,6 +107,7 @@ const HomeStack = (): JSX.Element => {
                     <Stack.Screen name="Keychain" component={KeychainScreen} initialParams={{ parentCallback: handleCallback }} />
                     <Stack.Screen name="AddKeychain" component={AddKeychainScreen} />
                     <Stack.Screen name="UpdateKeychain" component={UpdateKeychainScreen} />
+                    <Stack.Screen name="Galery" component={GaleryScreen} />
                 </Stack.Group>
             ) : userLoggedIn === STACKCHOICE.SIGN ? (
                 <Stack.Group>

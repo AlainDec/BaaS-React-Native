@@ -83,6 +83,10 @@ const KeychainScreen = ({ route, navigation }: HomeScreenNavigationProp) => {
             });
     }
 
+    const galery = () => {
+        navigation.navigate('Galery');
+    }
+
     const addItem = (): void => {
         navigation.navigate("AddKeychain");
     }
@@ -109,6 +113,11 @@ const KeychainScreen = ({ route, navigation }: HomeScreenNavigationProp) => {
                 <Pressable onPress={logout}>
                     <View style={styles.button}>
                         <Icon name="power-standby" size={28} color="white" />
+                    </View>
+                </Pressable>
+                <Pressable onPress={galery}>
+                    <View style={styles.button}>
+                        <Icon name="image-multiple" size={28} color="white" />
                     </View>
                 </Pressable>
                 <Pressable onPress={addItem}>

@@ -25,7 +25,8 @@ const SignUpScreen = ({ route, navigation }: HomeScreenNavigationProp) => {
             .createUserWithEmailAndPassword(childData.email, childData.password)
             .then(() => {
                 // On renseigne la page parente que le user est loggué => TRUE
-                route.params.parentCallback(true);
+                // Ajout du ? car l'objet est déclaré comme undefined aussi
+                route.params?.parentCallback(true);
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {
