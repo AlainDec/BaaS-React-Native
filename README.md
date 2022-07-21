@@ -87,4 +87,4 @@ Ajouter dans le fichier android/app/src/debug/AndroidManifest.xml :
 <uses-permission android:name="android.permission.CAMERA"/>  
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>  
 ```
-
+Pour stocker les photos, créer un compte sur https://console.cloud.google.com/  
