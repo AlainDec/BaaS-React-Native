@@ -4,30 +4,27 @@ import { FAB, Portal, Provider } from 'react-native-paper';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 // Icônes
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// Navigation
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { HomeStackScreenParamList } from "../navigation/HomeStack";
+// Firebase
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
-export default function GaleryScreen() {
+type HomeScreenNavigationProp = NativeStackScreenProps<HomeStackScreenParamList, 'Keychain'>
+
+export default function GaleryScreen({ route, navigation }: HomeScreenNavigationProp) {
 
     const win = Dimensions.get('window');
     const widthOneImage = win.width * 0.7;
     const widthMultipleImage = win.width * 0.5 - 15;
 
-    const [response, setResponse] = useState<any>(null);
-
-    const transfertToFirestore = () => {
-        console.log("Transfert démarré");
-    }
-    
-    useEffect( () => {
-        if (response !== undefined) {
-            // Stockage des images dans Firestore
-        }
-    }, [response])
-
     return (
         <View style={styles.container}>
+            <Text style={styles.title}>Photos stockées dans Firebase : aucune</Text>
             <ScrollView style={{flex: 1}}>
                 {/* Si 1 image, l'affiche en grand et centrée. Sinon, 2 par 2 par ligne. */}
-                <View style={[styles.containerImage, response?.assets.length === 1 && { alignSelf: 'center'}]}>
+                {/* <View style={[styles.containerImage, response?.assets.length === 1 && { alignSelf: 'center'}]}>
                     {
                         response?.assets &&
                         response?.assets.map(({ uri }: any) => (
@@ -44,17 +41,11 @@ export default function GaleryScreen() {
                             </View>
                         ))
                     }
-                </View>
+                </View> */}
             </ScrollView>
 
             <View style={styles.containerButtons}>
-                <Pressable onPress={() => {
-                    launchImageLibrary({
-                        selectionLimit: 0,
-                        mediaType: 'photo',
-                        includeBase64: false,
-                    }, setResponse);
-                }}>
+                <Pressable onPress={() => navigation.navigate('UploadPhoto')}>
                     <View style={styles.button}>
                         <Icon name="image-search" size={28} color="white" />
                         <Text style={styles.textButton}>Importer</Text>
@@ -101,5 +92,9 @@ const styles = StyleSheet.create({
         color: 'white',
         paddingLeft: 5,
     },
+    title: {
+        margin: 10,
+        fontSize: 16,
+    }
 });
 

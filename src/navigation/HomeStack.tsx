@@ -7,6 +7,7 @@ import KeychainScreen from '../screens/KeychainScreen';
 import AddKeychainScreen from '../screens/AddKeychainScreen';
 import UpdateKeychainScreen from '../screens/UpdateKeychainScreen';
 import GaleryScreen from '../screens/GaleryScreen';
+import UploadPhotoScreen from '../screens/UploadPhotoScreen';
 // Firebase
 import auth from '@react-native-firebase/auth';
 // Ignorer les warning de la navigation pour les données non sérialisables
@@ -31,6 +32,7 @@ export type HomeStackScreenParamList = {
     AddKeychain: undefined;
     UpdateKeychain: { itemId: string };
     Galery: undefined;
+    UploadPhoto: undefined;
     // Loading
     Loading: undefined;
 };
@@ -108,6 +110,7 @@ const HomeStack = (): JSX.Element => {
                     <Stack.Screen name="AddKeychain" component={AddKeychainScreen} />
                     <Stack.Screen name="UpdateKeychain" component={UpdateKeychainScreen} />
                     <Stack.Screen name="Galery" component={GaleryScreen} />
+                    <Stack.Screen name="UploadPhoto" component={UploadPhotoScreen} />
                 </Stack.Group>
             ) : userLoggedIn === STACKCHOICE.SIGN ? (
                 <Stack.Group>

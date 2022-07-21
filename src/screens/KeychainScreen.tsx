@@ -15,7 +15,7 @@ import DataList from '../components/DataList';
 // autologin
 import { MMKVLoader, useMMKVStorage } from "react-native-mmkv-storage";
 
-type HomeScreenNavigationProp = NativeStackScreenProps<HomeStackScreenParamList, 'Identification'>
+type HomeScreenNavigationProp = NativeStackScreenProps<HomeStackScreenParamList, 'Keychain'>
 
 const MMKVwithEncryption = new MMKVLoader().withEncryption().initialize(); // LocalStorage
 
