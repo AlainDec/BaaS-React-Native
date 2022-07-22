@@ -10,38 +10,73 @@ import { HomeStackScreenParamList } from "../navigation/HomeStack";
 // Firebase
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import storage from '@react-native-firebase/storage';
 
 type HomeScreenNavigationProp = NativeStackScreenProps<HomeStackScreenParamList, 'Keychain'>
 
 export default function GaleryScreen({ route, navigation }: HomeScreenNavigationProp) {
 
+    // Gestion fichiers
     const win = Dimensions.get('window');
     const widthOneImage = win.width * 0.7;
     const widthMultipleImage = win.width * 0.5 - 15;
 
+    // Utilisation de l'identifiant du user pour accéder à son répertoire des photos
+    let userAuth = auth().currentUser;
+    let imageDirectory = 'galery/' + userAuth?.uid + '/';
+
+    let [images, setImages] = useState<string[]>([]);
+
+    useEffect(() => {
+
+        // Rustine invisible pour l'utilisateur, mais en dév si on fait un CTRL+S, ca concatène
+        // les images à chaque fois et on arrive à énormément d'images
+        setImages([]);
+
+        // Récupération des images sur Firestore
+        storage()
+            .ref(imageDirectory)
+            .listAll()
+            .then(function (result) {
+                result.items.forEach(function (imageRef) {
+                    imageRef.getDownloadURL().then(function (url) {
+
+                        setImages(previous => [...previous, url]);
+
+                    }).catch(function (error) {
+                        // Handle any errors
+                    });
+                });
+            })
+            .catch((e) => console.log('Erreur pendant le téléchargement => ', e));
+    }, []);
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Photos stockées dans Firebase : aucune</Text>
-            <ScrollView style={{flex: 1}}>
-                {/* Si 1 image, l'affiche en grand et centrée. Sinon, 2 par 2 par ligne. */}
-                {/* <View style={[styles.containerImage, response?.assets.length === 1 && { alignSelf: 'center'}]}>
+            {
+                images?.length < 1 && <Text style={styles.title}>Photos stockées dans Firebase : aucune</Text>
+            }
+            <ScrollView style={{ flex: 1 }}>
+                <View style={[styles.containerImage, images?.length === 1 && { alignSelf: 'center' }]}>
+                    {/* Si 1 image, l'affiche en grand et centrée. Sinon, 2 par 2 par ligne. */}
                     {
-                        response?.assets &&
-                        response?.assets.map(({ uri }: any) => (
-                            <View key={uri} style={styles.image}>
-                                <Image
-                                    resizeMode="cover"
-                                    resizeMethod="scale"
-                                    style={{ 
-                                        width: response.assets.length === 1 ? widthOneImage : widthMultipleImage,
-                                        height: response.assets.length === 1 ? widthOneImage : widthMultipleImage
-                                    }}
-                                    source={{ uri: uri }}
-                                />
-                            </View>
-                        ))
+                        images.map((item, index) => {
+                            return (
+                                <View key={index} style={styles.image}>
+                                    <Image
+                                        resizeMode="cover"
+                                        resizeMethod="scale"
+                                        style={{
+                                            width: images?.length === 1 ? widthOneImage : widthMultipleImage,
+                                            height: images?.length === 1 ? widthOneImage : widthMultipleImage
+                                        }}
+                                        source={{ uri: item }}
+                                    />
+                                </View>
+                            )
+                        })
                     }
-                </View> */}
+                </View>
             </ScrollView>
 
             <View style={styles.containerButtons}>
