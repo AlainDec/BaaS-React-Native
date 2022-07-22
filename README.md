@@ -87,4 +87,23 @@ Ajouter dans le fichier android/app/src/debug/AndroidManifest.xml :
 <uses-permission android:name="android.permission.CAMERA"/>  
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>  
 ```
-Pour stocker les photos, créer un compte sur https://console.cloud.google.com/  
+Pour stocker les photos: https://console.firebase.google.com/project/lamanubaas/storage/lamanubaas.appspot.com/files
+Doc sur https://rnfirebase.io/storage/usage  
+
+Gérer le storage  
+$ npm install @react-native-firebase/app @react-native-firebase/storage  
+$ npm install react-native-progress  
+
+Ajouter des règles dans le firebase cloud storage pour pouvoir enregistrer des photos :
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+```
+
+
