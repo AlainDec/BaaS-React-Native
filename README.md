@@ -41,46 +41,46 @@ Avec la nouvelle version de React 18, react Native a des soucis avec React Navig
 $ npx react-native init p17BaaS --template react-native-template-typescript@6.10.2 
 
 Installer les packages :  
-$ npm install @react-navigation/native @react-navigation/native-stack  
-$ npm install react-native-screens react-native-safe-area-context  
-$ npm install react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view  
+> $ npm install @react-navigation/native @react-navigation/native-stack  
+> $ npm install react-native-screens react-native-safe-area-context  
+> $ npm install react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view  
 Les icônes:  
-$ npm install --save react-native-vector-icons  
-$ npm i --save-dev @types/react-native-vector-icons  
+> $ npm install --save react-native-vector-icons  
+> $ npm i --save-dev @types/react-native-vector-icons  
 Editer le fichier android/app/build.gradle (MAIS PAS android/build.gradle) et ajouter en bas :  
-apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"  
-$ npm install react-native-vector-icons react-native link react-native-vector-icons  
+> apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"  
+> $ npm install react-native-vector-icons react-native link react-native-vector-icons  
 
 Installer React Native Firebase  
-$ npm install --save @react-native-firebase/app  
+> $ npm install --save @react-native-firebase/app  
 
 Installer le module d'authentification de Firebase. Ca fournit des services backend et des SDK faciles à utiliser pour authentifier les utilisateurs. Il prend en charge l'authentification à l'aide de mots de passe, de numéros de téléphone, de fournisseurs d'identité fédérés populaires comme Google, Facebook et Twitter, et plus encore.  
-$ npm install @react-native-firebase/auth
+> $ npm install @react-native-firebase/auth
 
 Gestion des formulaires avec React Hook Form  
-$ npm install react-hook-form  
+> $ npm install react-hook-form  
 un bon tuto vidéo : https://www.youtube.com/watch?v=6DRAg26QtPI&list=PLpepLKamtPjh-xbBONWs42XNNSbtz3VGc&index=7&ab_channel=WawaSensei  
 
 Gestion des règles de validations des formulaires avec YUP  
-$ npm i yup  
+> $ npm i yup  
 
 Yup a besoin d'un resolver et donc de sa librairie :  
-$ npm install @hookform/resolvers  
+> $ npm install @hookform/resolvers  
 
 Doc d'inspiration : https://blog.logrocket.com/email-authentication-react-native-react-navigation-firebase/  
 
 4/ : créer la DB : https://console.firebase.google.com/project/lamanubaas/firestore  
-$ npm install @react-native-firebase/app  
-$ npm install @react-native-firebase/firestore  
+> $ npm install @react-native-firebase/app  
+> $ npm install @react-native-firebase/firestore  
 
 6/ : installer la lib :  
-$ npm install react-native-mmkv-storage  
+> $ npm install react-native-mmkv-storage  
 
 7/ : biométrie  
-$ npm i react-native-biometrics  
+> $ npm i react-native-biometrics  
 
 8/ : Gestion de la galerie photo  
-$ npm i react-native-image-picker  
+> $ npm i react-native-image-picker  
 
 Ajouter dans le fichier android/app/src/debug/AndroidManifest.xml :  
 ```
@@ -91,8 +91,8 @@ Pour stocker les photos: https://console.firebase.google.com/project/lamanubaas/
 Doc sur https://rnfirebase.io/storage/usage  
 
 Gérer le storage  
-$ npm install @react-native-firebase/app @react-native-firebase/storage  
-$ npm install react-native-progress  
+> $ npm install @react-native-firebase/app @react-native-firebase/storage  
+> $ npm install react-native-progress  
 
 Ajouter des règles dans le firebase cloud storage pour pouvoir enregistrer des photos :
 ```
@@ -105,5 +105,3 @@ service firebase.storage {
   }
 }
 ```
-
-
