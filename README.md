@@ -38,15 +38,17 @@ A la déconnexion, suppression de ses identifiants de connexion.
 
 
 Avec la nouvelle version de React 18, react Native a des soucis avec React Navigation. Il faut donc créer le projet avec cette ligne de commande :  
-$ npx react-native init p17BaaS --template react-native-template-typescript@6.10.2 
+> $ npx react-native init p17BaaS --template react-native-template-typescript@6.10.2 
 
 Installer les packages :  
 > $ npm install @react-navigation/native @react-navigation/native-stack  
 > $ npm install react-native-screens react-native-safe-area-context  
 > $ npm install react-native-reanimated react-native-gesture-handler react-native-screens react-native-safe-area-context @react-native-community/masked-view  
+
 Les icônes:  
 > $ npm install --save react-native-vector-icons  
 > $ npm i --save-dev @types/react-native-vector-icons  
+
 Editer le fichier android/app/build.gradle (MAIS PAS android/build.gradle) et ajouter en bas :  
 > apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"  
 > $ npm install react-native-vector-icons react-native link react-native-vector-icons  
