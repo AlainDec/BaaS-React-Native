@@ -1,4 +1,4 @@
-# BaaS
+# BaaS - Backend as a service
 
 **Application de gestion de mot de passe avec Firebase**
 
